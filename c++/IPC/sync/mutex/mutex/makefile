@@ -10,7 +10,6 @@ INCLUDES=-I$(INCPATH)
 LIBS=-L$(BINPATH) \
 	 -L$(LIBPATH) \
 	 -pthread    \
-	 -lrt
 
 CC=g++
 
