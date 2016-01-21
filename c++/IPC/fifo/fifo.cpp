@@ -14,6 +14,7 @@
 #include <signal.h>
 #include <limits.h>
 
+
 using namespace std;
 
 const char *FIFONAME="./fifo.pipe";
