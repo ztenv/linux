@@ -1,0 +1,29 @@
+OBJS=./threadmutex.o
+APPNAME=mutex
+
+BINPATH=./
+INCPATH=./
+LIBPATH=./ 
+
+INCLUDES=-I$(INCPATH)
+
+LIBS=-L$(BINPATH) \
+	 -L$(LIBPATH) \
+	 -pthread    \
+	 -lrt
+
+CC=g++
+
+CCFLAGS=-Wall -g
+
+$(APPNAME):$(OBJS)
+	   $(CC) $(LIBS) -o $@ $^
+
+.SUFFIXES:.c .cpp .o
+.cpp.o:
+	   $(CC) $(CCFLAGS) $(INCLUDES) -c $*.cpp -o $*.o
+
+.PHONY:clean
+clean:
+	   rm -rf *.o $(APPNAME)
+
