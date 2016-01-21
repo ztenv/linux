@@ -1,4 +1,4 @@
-OBJS=./threadmutex.o
+OBJS=threadmutex.o
 APPNAME=mutex
 
 BINPATH=./

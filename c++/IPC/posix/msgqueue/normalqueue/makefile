@@ -1,15 +1,15 @@
-OBJS=normalqueue.cpp
+OBJS=normalqueue.o
 APPNAME=msgqueue
 
-BINPATH=./bin/
-INCPATH=./include/
-LIBPTH=./lib/
+BINPATH=-L./
+INCPATH=-I./
+LIBPATH=-L./ 
 
-INCLUDES=-I$(INCPATH)
+INCLUDES=$(INCPATH)
 
-LIBS=-L$(BINPATH) \
-	 -L$(LIBPATH) \
-	 -lpthread    \
+LIBS=$(BINPATH) \
+	 $(LIBPATH) \
+	 -pthread    \
 	 -lrt
 
 CC=g++
@@ -17,11 +17,11 @@ CC=g++
 CCFLAGS=-Wall -g
 
 $(APPNAME):$(OBJS)
-	   $(CC) $(LIBS) -o $@ $^
+	   $(CC) -o $@ $^ $(LIBS)
 
 .SUFFIXES:.c .cpp .o
 .cpp.o:
-	   $(CC) $(INCLUDES) $(CCFLAGS) -c $*.cpp -o $*.o
+	   $(CC) $(CCFLAGS) $(INCLUDES) -c $*.cpp -o $*.o
 
 .PHONY:clean
 clean:
