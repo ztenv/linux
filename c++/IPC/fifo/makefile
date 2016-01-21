@@ -19,10 +19,10 @@ $(APPNAME):$(OBJS)
 	   $(CC) $(LIBS) -o $@ $^
 
 .SUFFIXES:.c .cpp .o
-	.cpp.o:
+.cpp.o:
 	   $(CC) $(INCLUDES) $(CCFLAGS) -c $*.cpp -o $*.o
 
 .PHONY:clean
-	clean:
+clean:
 	   rm -rf *.o $(APPNAME)
 
