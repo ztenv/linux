@@ -1,14 +1,14 @@
 OBJS=fifo.o
 APPNAME=fifo
 
-BINPATH=./bin/
-INCPATH=./include/
-LIBPTH=./lib/
+BINPATH=-L./
+INCPATH=-I./
+LIBPTH=-L./
 
-INCLUDES=-I$(INCPATH)
+INCLUDES=$(INCPATH)
 
-LIBS=-L$(BINPATH) \
-	 -L$(LIBPATH) \
+LIBS=$(BINPATH) \
+	 $(LIBPATH) \
 	 -pthread
 
 CC=g++
@@ -16,7 +16,7 @@ CC=g++
 CCFLAGS=-Wall -g
 
 $(APPNAME):$(OBJS)
-	   $(CC) $(LIBS) -o $@ $^
+	   $(CC)  -o $@ $^ $(LIBS)
 
 .SUFFIXES:.c .cpp .o
 .cpp.o:

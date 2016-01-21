@@ -1,14 +1,14 @@
 OBJS=threadmutex.o
 APPNAME=mutex
 
-BINPATH=./
-INCPATH=./
-LIBPATH=./ 
+BINPATH=-L./
+INCPATH=-I./
+LIBPATH=-L./ 
 
-INCLUDES=-I$(INCPATH)
+INCLUDES=$(INCPATH)
 
-LIBS=-L$(BINPATH) \
-	 -L$(LIBPATH) \
+LIBS=$(BINPATH) \
+	 $(LIBPATH) \
 	 -pthread    \
 
 CC=g++
@@ -16,7 +16,7 @@ CC=g++
 CCFLAGS=-Wall -g
 
 $(APPNAME):$(OBJS)
-	   $(CC) $(LIBS) -o $@ $^
+	   $(CC)  -o $@ $^ $(LIBS)
 
 .SUFFIXES:.c .cpp .o
 .cpp.o:
