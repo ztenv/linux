@@ -101,6 +101,7 @@ void parent()
     {
         bzero(buf,BUFLEN);
         rand_r(&seed);
+
         flocker.getWriteLockWait(fd);
 
         sprintf(buf,"%d,%i,%u\n",getpid(),i,seed);
@@ -113,7 +114,9 @@ void parent()
         {
             cout<<"parent write:"<<buf<<endl;
         }
+
         flocker.unlock(fd);
+
         sleep(seed%2+2);
     }
     close(fd);
@@ -141,7 +144,9 @@ void child()
         {
             cout<<"child write:"<<buf<<endl;
         }
+
         flocker.unlock(fd);
+
         sleep(seed%2+1);
     }
     close(fd);
