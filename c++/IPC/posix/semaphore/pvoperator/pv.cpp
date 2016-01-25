@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <strings.h>
+#include <signal.h>
 
 using namespace std;
 
@@ -22,6 +23,8 @@ sem_t vsem;
 pthread_t pthid=-1;
 pthread_t vthid=-1;
 
+
+void sighandler(int signum);
 void *Pfunc(void *);
 void *Vfunc(void *);
 void thread_cleanup(void *);
@@ -36,6 +39,15 @@ int main(int argc,char *argv[])
         return -1;
     }
 
+    struct sigaction sig;
+    sigemptyset(&sig.sa_mask);
+    sig.sa_flags=0;
+    sig.sa_handler=sighandler;
+    res=sigaction(SIGINT,&sig,NULL);
+    if(res!=0)
+    {
+        perror("sigaction error");
+    }
     res=pthread_create(&pthid,NULL,Pfunc,NULL);
     res|=pthread_create(&vthid,NULL,Vfunc,NULL);
     if(res!=0)
@@ -91,4 +103,22 @@ void thread_cleanup(void *)
 {
     sem_post(&psem);
     sem_post(&vsem);
+    cout<<"thread cleanup "<<pthread_self()<<endl;
+}
+
+void sighandler(int signum)
+{
+    switch(signum)
+    {
+        case SIGINT:
+            {
+                pthread_cancel(pthid);
+                pthread_cancel(vthid);
+                break;
+            }
+        default:
+            {
+                break;
+            }
+    }
 }
