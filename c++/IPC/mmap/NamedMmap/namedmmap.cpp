@@ -89,6 +89,111 @@ int main(int argc,char * argv[])
     return 0;
 }
 
+void parent()
+{
+    //open or create mmap
+    int fd=open(MapFile,O_CREAT|O_RDWR|O_EXCL,0666);//read and write
+    if(fd<0)
+    {
+        fd=open(MapFile,O_CREAT|O_RDWR,0666);
+        if(fd<0)
+        {
+            perror("open file error");
+            return;
+        }
+    }else
+    {
+        int res=ftruncate(fd,MAPLEN);
+        if(res!=0)
+        {
+            perror("ftruncate error");
+            return;
+        }
+    }
+    dataAddr=mmap(NULL,MAPLEN,PROT_WRITE|PROT_READ,MAP_SHARED,fd,0);//read and write
+    close(fd);
+    if(dataAddr==NULL)
+    {
+        perror("mmap error");
+        return;
+    }
+    char *pdata=static_cast<char *>(dataAddr);
+    unsigned int seed=time(NULL);
+    int res=0;
+    for(int i=0;i<RUNTIME;++i)
+    {
+        rand_r(&seed);
+
+        res=sem_wait(psem);
+        if(res!=0)
+        {
+            perror("sem_wait psem error");
+            break;
+        }
+
+        bzero(pdata,MAPLEN);
+        int res=sprintf(pdata,"%d,%i,%u\n",getpid(),i,seed);
+        if(res==0)
+        {
+            perror("sprintf error");
+            break;
+        }else
+        {
+            cout<<"parent write:"<<pdata;
+        }
+        res=sem_post(vsem);
+        if(res!=0)
+        {
+            perror("sem_post vsem error");
+            break;
+        }
+
+        sleep(seed%2+1);
+    }
+
+    sem_post(vsem);
+}
+
+void child()
+{
+    int fd=open(MapFile,O_CREAT|O_RDONLY|O_EXCL,0666);//read only
+    if(fd<0)
+    {
+        fd=open(MapFile,O_CREAT|O_RDONLY,0666);
+        if(fd<0)
+        {
+            perror("open file error");
+            return;
+        }
+    }
+
+    dataAddr=mmap(NULL,MAPLEN,PROT_READ,MAP_SHARED,fd,0);//read only
+    close(fd);
+    if(dataAddr==NULL)
+    {
+        perror("mmap error");
+        return;
+    }
+    char *pdata=static_cast<char *>(dataAddr);
+    int res=0;
+    for(int i=0;i<RUNTIME;++i)
+    {
+        res=sem_wait(vsem);
+        if(res!=0)
+        {
+            perror("sem_wait vsem error");
+            break;
+        }
+        cout<<"child read:"<<pdata<<endl;
+        res=sem_post(psem);
+        if(res!=0)
+        {
+            perror("sem_post psem error");
+            break;
+        }
+    }
+    sem_post(psem);
+}
 void clean()
 {
     sem_post(psem);
@@ -97,7 +202,15 @@ void clean()
     sem_destroy(psem);
     sem_destroy(vsem);
 
+    unlink(MapFile);
+
     int res=munmap(static_cast<void*>(psem),2*sizeof(sem_t));
+    if(res!=0)
+    {
+        perror("munmap error");
+    }
+
+    res=munmap(dataAddr,MAPLEN);
     if(res!=0)
     {
         perror("munmap error");
@@ -132,100 +245,3 @@ void sighandler(int signum)
     }
 }
 
-void parent()
-{
-    //open or create mmap
-    int fd=open(MapFile,O_CREAT|O_WRONLY|O_EXCL,0666);
-    if(fd<0)
-    {
-        fd=open(MapFile,O_CREAT|O_WRONLY,0666);
-        if(fd<0)
-        {
-            perror("open file error");
-            return;
-        }
-    }
-    dataAddr=mmap(NULL,MAPLEN,PROT_WRITE,MAP_SHARED,fd,0);
-    close(fd);
-    if(dataAddr==NULL)
-    {
-        perror("mmap error");
-        return;
-    }
-    char *pdata=static_cast<char *>(dataAddr);
-    unsigned int seed=time(NULL);
-    int res=0;
-    for(int i=0;i<RUNTIME;++i)
-    {
-        rand_r(&seed);
-
-        res=sem_wait(psem);
-        if(res!=0)
-        {
-            perror("sem_wait psem error");
-            break;
-        }
-
-        bzero(pdata,MAPLEN-2*sizeof(sem_t));
-        int res=sprintf(pdata,"%d,%i,%u\n",getpid(),i,seed);
-        if(res==0)
-        {
-            perror("sprintf error");
-            break;
-        }else
-        {
-            cout<<"parent write:"<<pdata;
-        }
-        res=sem_post(vsem);
-        if(res!=0)
-        {
-            perror("sem_post vsem error");
-            break;
-        }
-
-        sleep(seed%2+2);
-    }
-
-    sem_post(vsem);
-}
-
-void child()
-{
-    int fd=open(MapFile,O_CREAT|O_RDONLY|O_EXCL,0666);
-    if(fd<0)
-    {
-        fd=open(MapFile,O_CREAT|O_RDONLY,0666);
-        if(fd<0)
-        {
-            perror("open file error");
-            return;
-        }
-    }
-
-    dataAddr=mmap(NULL,MAPLEN,PROT_READ,MAP_SHARED,fd,0);
-    close(fd);
-    if(dataAddr==NULL)
-    {
-        perror("mmap error");
-        return;
-    }
-    char *pdata=static_cast<char *>(dataAddr);
-    int res=0;
-    for(int i=0;i<RUNTIME;++i)
-    {
-        res=sem_wait(vsem);
-        if(res!=0)
-        {
-            perror("sem_wait vsem error");
-            break;
-        }
-        cout<<"child read:"<<pdata<<endl;
-        res=sem_post(psem);
-        if(res!=0)
-        {
-            perror("sem_post psem error");
-            break;
-        }
-    }
-    sem_post(psem);
-}
