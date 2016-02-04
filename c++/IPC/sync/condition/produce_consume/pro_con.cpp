@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <signal.h>
 
 #include "lockguard.h"
 #include "data.h"
@@ -18,6 +19,8 @@ pthread_t threads[ThreadNum];
 
 pthread_mutex_t iomutex;
 CData<int> m_buf(10);
+
+void sighandler(int signum);
 
 void init();
 void finit();
@@ -35,16 +38,32 @@ int main(int argc,char *argv[])
 
 void init()
 {
+    struct sigaction sig;
+    sigemptyset(&sig.sa_mask);
+    sig.sa_flags=0;
+    sig.sa_handler=sighandler;
+    int res=sigaction(SIGINT,&sig,NULL);
+    if(res!=0)
+    {
+        perror("sigaction errro");
+    }
     bzero(threads,sizeof(pthread_t)*ThreadNum);
-    int res=pthread_mutex_init(&iomutex,NULL);
+    res=pthread_mutex_init(&iomutex,NULL);
     if(res!=0)
     {
         perror("pthread_mutex_init error");
     }
 
-    res=pthread_create(&threads[0],NULL,produce,&m_buf);
-    res|=pthread_create(&threads[1],NULL,consume,&m_buf);
-    res|=pthread_create(&threads[2],NULL,consume,&m_buf);
+    pthread_attr_t attr;
+    bzero(&attr,sizeof(pthread_attr_t));
+    pthread_attr_setschedpolicy(&attr,SCHED_RR);
+    pthread_attr_setstacksize(&attr,100);
+
+    res=pthread_create(&threads[0],&attr,produce,&m_buf);
+    res|=pthread_create(&threads[1],&attr,consume,&m_buf);
+    res|=pthread_create(&threads[2],&attr,consume,&m_buf);
+    pthread_attr_destroy(&attr);
+
     if(res!=0)
     {
         perror("pthread_create error");
@@ -61,6 +80,25 @@ void finit()
     }
 }
 
+void sighandler(int signum)
+{
+    switch(signum)
+    {
+        case SIGINT:
+            {
+                for(size_t i=0;i<ThreadNum;++i)
+                {
+                    pthread_cancel(threads[i]);
+                }
+                break;
+            }
+        default:
+            {
+                cout<<"trap signal="<<signum<<endl;
+            }
+    }
+}
+
 void wait()
 {
     for(size_t i=0;i<ThreadNum;++i)
@@ -70,20 +108,26 @@ void wait()
 }
 
 void *produce(void *pdata)
-{
+{ 
     pthread_cleanup_push(thread_cleanup,NULL);
     unsigned int seed=static_cast<unsigned int>(time(NULL));
     CData<int> *buf=static_cast<CData<int>*>(pdata);
+    if(buf==NULL)
+    {
+        MutexGuard(&iomutex);
+        cout<<pthread_self()<<" invalid args"<<endl;
+        return NULL;
+    }
 
     do
     {
         rand_r(&seed);
         int *data=new int(seed%1000);
-        buf->add(data);
         {
             MutexGuard(&iomutex);
             cout<<pthread_self()<<" produce:"<<*data<<endl;
         }
+        buf->add(data);//print first and then add to buf,otherwise,the date mybe be deleted by consume thread
         sleep(1);
     }while(1);
 
@@ -94,6 +138,12 @@ void *consume(void *pdata)
 {
     pthread_cleanup_push(thread_cleanup,NULL);
     CData<int> *buf=static_cast<CData<int>*>(pdata);
+    if(buf==NULL)
+    {
+        MutexGuard(&iomutex);
+        cout<<pthread_self()<<" invalid args"<<endl;
+        return NULL;
+    }
     int *item=NULL;
     unsigned int seed=static_cast<unsigned int>(time(NULL))+10;
     do

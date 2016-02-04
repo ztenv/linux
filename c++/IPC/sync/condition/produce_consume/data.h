@@ -46,8 +46,8 @@ public:
             }
             m_set.push(pdata);
             ++m_pos;
-            pthread_cond_signal(&m_ccond);
         }
+        pthread_cond_signal(&m_ccond);
         return 0;
     }
     int read(T **pdata)
@@ -61,8 +61,8 @@ public:
             *pdata=m_set.front();
             m_set.pop();
             --m_pos;
-            pthread_cond_signal(&m_pcond);
         }
+        pthread_cond_signal(&m_pcond);
         return 0;
     }
 
