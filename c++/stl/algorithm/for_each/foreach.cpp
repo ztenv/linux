@@ -4,6 +4,10 @@
 
 using namespace std;
 
+
+/**
+ * @brief 判断是否为奇数
+ */
 class IsOddNum
 {
 public:
@@ -13,9 +17,19 @@ public:
     }
 };
 
+
+/**
+ * @brief 输出元素的functor
+ */
 class Print
 {
 public:
+
+    /**
+     * @brief    operator () 的重载
+     *
+     * @param[in] num 整型输入参数
+     */
     void operator()(int &num)
     {
         cout<<num<<",";
