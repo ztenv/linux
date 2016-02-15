@@ -18,15 +18,6 @@
 
 using namespace std;
 
-
-/**
- * @brief main
- *
- * @param[in] argc
- * @param[in] argv[]
- *
- * @return 
- */
 int main(int argc,char *argv[])
 {
     int fd=-1;
