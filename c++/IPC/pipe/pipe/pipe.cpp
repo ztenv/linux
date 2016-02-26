@@ -106,6 +106,7 @@ void parent()
         rand_r(&seed);
 
         p=buf;
+        t=time(NULL);
         char *ti=ctime_r(&t,p);
         if(ti==NULL)
         {
