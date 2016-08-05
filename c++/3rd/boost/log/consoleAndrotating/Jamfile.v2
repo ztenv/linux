@@ -8,7 +8,8 @@
 project
     : requirements
         <include>.
-        <library>/log//log  #引入/log/项目的/log库(/log库在../liblog/Jamfile.v2文件中的lib 后声明)
+        <include>../liblog/
+        <library>/rotatelog//log  #引入/log/项目的/log库(/log库在../liblog/Jamfile.v2文件中的lib 后声明)
         <library>/boost/log//boost_log
         <library>/boost/log//boost_log_setup
         <library>/boost/date_time//boost_date_time

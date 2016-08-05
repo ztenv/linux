@@ -1,2 +1,2 @@
-use-project /log : liblog ; #声明/log project，这个工程放于当前(Jamfile.v2)目录的liblog目录；
+use-project /rotatelog : liblog ; #声明/log project，这个工程放于当前(Jamfile.v2)目录的liblog目录；
         #目的是为了让当前目录的所有子目录的工程都可以通过<library>/log//log来引入日志库
