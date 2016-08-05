@@ -24,5 +24,5 @@ lib log
 #编译可执行文件的配置
 exe rotating_file
     : main.cpp
-    : <library>log#引入当前的log库，因为在同一目录，所以没必要通过项目名称来引用(/log//log)
+    : <library>log #引入当前的log库，因为在同一目录，所以没必要通过项目名称来引用(/log//log)
     ;
