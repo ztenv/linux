@@ -158,6 +158,7 @@ project
         <include>.
         <include>$(BOOST_ROOT)
         <library-path>$(BOOST_ROOT)/stage/lib/
+#        <link>static
         <threading>multi
 
 #      [ boostcpp.architecture ]
@@ -207,38 +208,38 @@ project
 #    }
 #}
 #
-#all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
-#    [ glob libs/*/build/Jamfile ] ] ;
-#
-#all-libraries = [ sequence.unique $(all-libraries) ] ;
-## The function_types library has a Jamfile, but it's used for maintenance
-## purposes, there's no library to build and install.
-#all-libraries = [ set.difference $(all-libraries) : function_types ] ;
-#
+all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
+    [ glob libs/*/build/Jamfile ] ] ;
+
+all-libraries = [ sequence.unique $(all-libraries) ] ;
+# The function_types library has a Jamfile, but it's used for maintenance
+# purposes, there's no library to build and install.
+all-libraries = [ set.difference $(all-libraries) : function_types ] ;
+
 ## Setup convenient aliases for all libraries.
-#
-#local rule explicit-alias ( id : targets + )
-#{
-#    alias $(id) : $(targets) ;
-#    explicit $(id) ;
-#}
-#
-## First, the complicated libraries: where the target name in Jamfile is
-## different from its directory name.
-#explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
-#explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
-#explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
-#explicit-alias bgl-vis : libs/graps/build//bgl-vis ;
-#explicit-alias serialization : libs/serialization/build//boost_serialization ;
-#explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
-#for local l in $(all-libraries)
-#{
-#    if ! $(l) in test graph serialization
-#    {
-#        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
-#    }
-#}
-#
+
+local rule explicit-alias ( id : targets + )
+{
+    alias $(id) : $(targets) ;
+    explicit $(id) ;
+}
+
+# First, the complicated libraries: where the target name in Jamfile is
+# different from its directory name.
+explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
+explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
+explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
+explicit-alias bgl-vis : libs/graps/build//bgl-vis ;
+explicit-alias serialization : libs/serialization/build//boost_serialization ;
+explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
+for local l in $(all-libraries)
+{
+    if ! $(l) in test graph serialization
+    {
+        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
+    }
+}
+
 ## Log has an additional target
 #explicit-alias log_setup : libs/log/build//boost_log_setup ;
 #
@@ -246,11 +247,11 @@ project
 #explicit headers ;
 #
 ## Make project ids of all libraries known.
-#for local l in $(all-libraries)
-#{
-#    use-project /boost/$(l) : libs/$(l)/build ;
-#}
-#
+for local l in $(all-libraries)
+{
+    use-project /boost/$(l) : libs/$(l)/build ;
+}
+
 #if [ path.exists $(BOOST_ROOT)/tools/inspect ]
 #{
 #    use-project /boost/tools/inspect : tools/inspect/build ;
@@ -261,39 +262,39 @@ project
 #    use-project /boost/libs/wave/tool : libs/wave/tool/build ;
 #}
 #
-## This rule should be called from libraries' Jamfiles and will create two
-## targets, "install" and "stage", that will install or stage that library. The
-## --prefix option is respected, but --with and --without options, naturally, are
-## ignored.
-##
-## - libraries -- list of library targets to install.
-##
-#rule boost-install ( libraries * )
-#{
-#    package.install install
-#        : <dependency>/boost//install-proper-headers $(install-requirements)
-#        : # No binaries
-#        : $(libraries)
-#        : # No headers, it is handled by the dependency.
-#    ;
+# This rule should be called from libraries' Jamfiles and will create two
+# targets, "install" and "stage", that will install or stage that library. The
+# --prefix option is respected, but --with and --without options, naturally, are
+# ignored.
 #
-#    install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;
+# - libraries -- list of library targets to install.
 #
-#    module [ CALLER_MODULE ]
-#    {
-#        explicit stage ;
-#        explicit install ;
-#    }
-#}
-#
-#headers =
-#    # The .SUNWCCh files are present in tr1 include directory and have to be
-#    # installed (see http://lists.boost.org/Archives/boost/2007/05/121430.php).
-#    [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
-#    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ]
-#    [ path.glob boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
-#    ;
-#
-## Declare special top-level targets that build and install the desired variants
-## of the libraries.
+rule boost-install ( libraries * )
+{
+    package.install install
+        : <dependency>/boost//install-proper-headers $(install-requirements)
+        : # No binaries
+        : $(libraries)
+        : # No headers, it is handled by the dependency.
+    ;
+
+    install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;
+
+    module [ CALLER_MODULE ]
+    {
+        explicit stage ;
+        explicit install ;
+    }
+}
+
+headers =
+    # The .SUNWCCh files are present in tr1 include directory and have to be
+    # installed (see http://lists.boost.org/Archives/boost/2007/05/121430.php).
+    [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
+    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ]
+    [ path.glob boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
+    ;
+
+# Declare special top-level targets that build and install the desired variants
+# of the libraries.
 #boostcpp.declare-targets $(all-libraries) : $(headers) ;
