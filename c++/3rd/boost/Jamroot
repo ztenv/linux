@@ -158,7 +158,7 @@ project
         <include>.
         <include>$(BOOST_ROOT)
         <library-path>$(BOOST_ROOT)/stage/lib/
-        <link>static
+#        <link>static
         <threading>multi
 
 #      [ boostcpp.architecture ]
