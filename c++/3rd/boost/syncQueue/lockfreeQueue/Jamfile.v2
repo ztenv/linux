@@ -9,7 +9,6 @@ project
     : requirements
         <include>.
         <library>/boost/date_time//boost_date_time
-        <library>/boost/filesystem//boost_filesystem
         <library>/boost/system//boost_system
         <library>/boost/thread//boost_thread
     ;
