@@ -158,6 +158,7 @@ project
         <include>.
         <include>$(BOOST_ROOT)
         <library-path>$(BOOST_ROOT)/stage/lib/
+        <define>BOOST_ALL_NO_LIB=1
 #        <link>static
         <threading>multi
 

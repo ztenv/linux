@@ -13,7 +13,7 @@ int main(int argc,char *argv[])
 {
     ProduceAndConsumerPtr pcPtr=ProduceAndConsumerPtr(new ProduceAndConsumer());
 
-    pcPtr->Start(5,3);
+    pcPtr->Start(80,100);
     getchar();
     pcPtr->Stop();
     getchar();
