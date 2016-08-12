@@ -68,13 +68,13 @@ void ProduceAndConsumer::produce()
         while(!m_queuePtr->push(pbuf));
         {
             LockType lock(m_pmutex);
-            if(++m_proNum%10000==0)
+            if(++m_proNum%1000000==0)
             {
                 cout<<(format("produce %1% value") % m_proNum ) <<endl;
                 cout<<pts<<endl;
             }
         }
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(5));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
     }while(m_isRunning);
     cout<<(format("proeduce %1% value") % m_proNum)<<endl;
 }
@@ -87,7 +87,7 @@ void ProduceAndConsumer::consume()
         {
             {
                 LockType lock(m_cmutex);
-                if(++m_conNum%10000==0)
+                if(++m_conNum%1000000==0)
                 {
                     cout<<(format("consume %1% value") % m_conNum )<<endl;
                     cout<<pt<<endl;
@@ -95,7 +95,7 @@ void ProduceAndConsumer::consume()
             }
             delete[] pt;
         }
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(50));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
     }while(m_isRunning||!m_queuePtr->empty());
     cout<<(format("consume %1% value") % m_conNum)<<endl;
 }
