@@ -1,0 +1,23 @@
+#
+#          Copyright Andrey Semashev 2007 - 2015.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+#
+
+project
+    : requirements
+        <include>.
+        <library>/boost/date_time//boost_date_time
+        <library>/boost/system//boost_system
+        <library>/boost/thread//boost_thread
+        <library>/boost/coroutine//boost_coroutine
+    ;
+
+exe coroutine_timer1
+    : coroutine_timer1.cpp
+    ;
+
+exe coroutine_timer2
+    : coroutine_timer2.cpp
+    ;
