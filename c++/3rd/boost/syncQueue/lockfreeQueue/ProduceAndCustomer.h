@@ -27,6 +27,12 @@ class ProduceAndConsumer
 public:
     ProduceAndConsumer();
     ~ProduceAndConsumer();
+    ProduceAndConsumer(const ProduceAndConsumer &)=delete;
+    ProduceAndConsumer & operator=(const ProduceAndConsumer &)=delete;
+
+    ProduceAndConsumer(ProduceAndConsumer &&)=delete;
+    ProduceAndConsumer & operator=(ProduceAndConsumer &&)=delete;
+
     int Start(int pThreadNum,int cPthreadNum);
     int Stop();
 private:

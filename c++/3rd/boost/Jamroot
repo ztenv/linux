@@ -132,6 +132,7 @@ import link ;
 import os ;
 
 BOOST_ROOT = [ os.environ BOOST_ROOT ] ;
+PROJECT_ROOT = . ;
 constant BOOST_VERSION : 1.61.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
@@ -155,12 +156,13 @@ constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 project 
     : requirements 
-        <include>.
         <include>$(BOOST_ROOT)
-        <library-path>$(BOOST_ROOT)/stage/lib/
-        <define>BOOST_ALL_NO_LIB=1
-#        <link>static
+        <include>.
         <threading>multi
+        <link>static
+        <library-path>$(BOOST_ROOT)/stage/lib/
+        <library-path>$(PROJECT_ROOT)/stage/lib/
+        <define>BOOST_ALL_NO_LIB=1
 
 #      [ boostcpp.architecture ]
 #      [ boostcpp.address-model ]
