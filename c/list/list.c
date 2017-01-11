@@ -194,6 +194,7 @@ void traversal(struct list *plist)
 
 /**
  * 主程序入口
+ * 此主程序仅用于测试双向链表的正确性
  */
 int main(int argc,char *argv[])
 {
