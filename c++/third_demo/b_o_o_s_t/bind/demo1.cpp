@@ -1,3 +1,11 @@
+/**
+ * @file demo1.cpp
+ * @brief bind demo1
+ * @author shlian
+ * @version 1.0
+ * @date 2017-01-19
+ */
+
 #include <iostream>
 #include <string>
 
