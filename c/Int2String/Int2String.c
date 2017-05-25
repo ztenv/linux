@@ -48,7 +48,7 @@ static int initTable(char *pTable)
 }
 
 /**
- * @brief 把iVal转换为字符数组
+ * @brief 把整数iVAl转换为字符数组
  *
  * @param[in] iVal 待转换的整数
  *
