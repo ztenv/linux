@@ -15,12 +15,14 @@ static int initTable(char *pTable)
     {
         ival=index;
         pos=5;
+
         do
         {
             pTable[index*LEN+pos--]=48+ival%10;
             ival/=10;
         }while(ival!=0);
         pTable[index*LEN]=MAX_CAPACITY-1-pos;
+
     }while(++index<MAX_NUM);
 
     return 0;
@@ -28,6 +30,17 @@ static int initTable(char *pTable)
 
 const char * toString(int iVal)
 {
+    //将uVal转换为字符数组,并将结果填充到pResult
+#define CONVERT_VALUE(uVal)\
+    {\
+        int len=(char)pTable[(uVal)*LEN+0];\
+        char *p=&pTable[(uVal)*LEN+MAX_CAPACITY];\
+        do\
+        {\
+            pResult[--wpos]=*(--p);\
+            printf("wpos=%d,",wpos);\
+        }while(--len>0);\
+    }
     static char pTable[MAX_NUM*LEN]={0};
     static char pResult[MAX_LEN]={0};
     static char flag=0;
@@ -50,26 +63,17 @@ const char * toString(int iVal)
         int len=(char)pTable[uLVal*LEN+0];
         const char *p=&pTable[uLVal*LEN+MAX_CAPACITY-len];
         return p;
+
     }else {
+
         pResult[MAX_LEN-1]=0;
 
-        int len=(char)pTable[uLVal*LEN+0];
-        char *p=&pTable[uLVal*LEN+MAX_CAPACITY];
-        do
-        {
-            pResult[--wpos]=*(--p);
-            printf("wpos=%d,",wpos);
-        }while(--len>0);
-
+        //将低五位转换为字符数组，并填充到pResult
+        CONVERT_VALUE(uLVal);
         if(uHVal>0)
         {
-            int len=(char)pTable[uHVal*LEN+0];
-            char *p=&pTable[uHVal*LEN+MAX_CAPACITY];
-            do
-            {
-                pResult[--wpos]=*(--p);
-                printf("wpos=%d,",wpos);
-            }while(--len>0);
+            //将高五位转换为字符数组，并填充到pResult
+            CONVERT_VALUE(uHVal);
         }
 
         if(negFlag)
