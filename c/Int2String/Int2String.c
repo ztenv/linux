@@ -9,19 +9,24 @@ static int initTable(char *pTable)
 {//初始化查找表
     unsigned int index=0;
     unsigned int ival=0;
-    unsigned char pos=5;
+    unsigned char pos=MAX_CAPACITY-1;
 
     do
     {
         ival=index;
-        pos=5;
+        pos=MAX_CAPACITY-1;
 
         do
-        {
+        {//填充数字位
             pTable[index*LEN+pos--]=48+ival%10;
             ival/=10;
         }while(ival!=0);
         pTable[index*LEN]=MAX_CAPACITY-1-pos;
+
+        while(pos>0)
+        {//将未使用位填充为'0'
+            pTable[index*LEN+pos--]=48;
+        }
 
     }while(++index<MAX_NUM);
 
@@ -38,7 +43,6 @@ const char * toString(int iVal)
         do\
         {\
             pResult[--wpos]=*(--p);\
-            printf("wpos=%d,",wpos);\
         }while(--len>0);\
     }
     static char pTable[MAX_NUM*LEN]={0};
@@ -68,18 +72,28 @@ const char * toString(int iVal)
 
         pResult[MAX_LEN-1]=0;
 
-        //将低五位转换为字符数组，并填充到pResult
-        CONVERT_VALUE(uLVal);
         if(uHVal>0)
         {
-            //将高五位转换为字符数组，并填充到pResult
+            {
+                //填充低五位
+                int len=5;
+                char *p=&pTable[(uLVal)*LEN+MAX_CAPACITY];
+                do
+                {
+                    pResult[--wpos]=*(--p);
+                }while(--len>0);
+            }
+            //填充高位
             CONVERT_VALUE(uHVal);
+        }else{
+            //只填充低位
+            CONVERT_VALUE(uLVal);
         }
 
         if(negFlag)
         {
             pResult[--wpos]='-';
-            printf("wpos=%d,",wpos);
+//            printf("wpos=%d,",wpos);
         }
     }
 
@@ -89,21 +103,50 @@ const char * toString(int iVal)
 
 int main(int argc,char *argv[])
 {
-    printf("%s\n",toString(-10));
-    printf("%s\n",toString(-0));
     printf("%s\n",toString(0));
     printf("%s\n",toString(10));
     printf("%s\n",toString(100));
     printf("%s\n",toString(1000));
     printf("%s\n",toString(10000));
-    printf("%s\n",toString(90000));
-    printf("%s\n",toString(99999));
-    printf("%s\n",toString(11111));
-    printf("%s\n",toString(21111));
-    printf("%s\n",toString(31111));
+    printf("%s\n",toString(100000));
+    printf("%s\n",toString(1000000));
+    printf("%s\n",toString(10000000));
+    printf("%s\n",toString(100000000));
+    printf("%s\n",toString(1000000000));
+
+    printf("%s\n",toString(1000000001));
     printf("%s\n",toString(2147483647));
     printf("%s\n",toString(2147483648));
-    printf("%s\n",toString(2147483646));
+
+    printf("%s\n",toString(0x80000000));
+//    printf("%s\n",toString(-10));
+//    printf("%s\n",toString(-0));
+//    printf("%s\n",toString(0));
+//    printf("%s\n",toString(10));
+//    printf("%s\n",toString(100));
+//    printf("%s\n",toString(1000));
+//    printf("%s\n",toString(10000));
+//    printf("%s\n",toString(90000));
+//    printf("%s\n",toString(99999));
+//    printf("%s\n",toString(11111));
+//    printf("%s\n",toString(21111));
+//    printf("%s\n",toString(31111));
+//    printf("%s\n",toString(2147483647));
+//    printf("%s\n",toString(2147483648));
+//    printf("%s\n",toString(2147483646));
+//    printf("%s\n",toString(0x80000000));
+//
+//    int i=0;
+//    for(i=0x80000000;i<0;++i)
+//    {
+//        if(-i%1000001==0)
+//        printf("%d:%s ",i,toString(i));
+//    }
+//
+//    for(i=0;i<0x7fffffff;+i)
+//    {
+//        printf("%d:%s ",i,toString(i));
+//    }
 
     return 0;
 }
