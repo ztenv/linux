@@ -7,7 +7,9 @@
 
 using namespace std;
 
-unsigned long g_LoopCount(300000);
+unsigned long g_LoopCount(100000);
+pthread_mutex_t io;
+pthread_mutex_t pl;
 void * process1(void *arg);
 void * process2(void *arg);
 
@@ -26,7 +28,10 @@ int main(int argc,char *argv[])
 
     vector<pthread_t> threadSet;
 
-    unsigned int threadNumber(50);
+    pthread_mutex_init(&io,0);
+    pthread_mutex_init(&pl,0);
+
+    unsigned int threadNumber(100);
     for(unsigned int i=0;i<threadNumber;++i)
     {
         pthread_t t;
@@ -44,6 +49,8 @@ int main(int argc,char *argv[])
         pthread_join(threadSet[i],NULL);
     }
 
+    pthread_mutex_destroy(&pl);
+    pthread_mutex_destroy(&io);
     return 0;
 }
 
@@ -56,23 +63,38 @@ std::atomic<unsigned long> ia(0);
 void * process1(void *arg)
 {
     do{
-        ai=ai+1;
+        if(ia>=g_LoopCount)
+        {
+            break;
+        }
+        ai+=1;
+        ++ia;
         usleep(1000*10);
-    }while(++ia<g_LoopCount);
+    }while(true);
+    pthread_mutex_lock(&io);
+    cout<<ai<<" "<<ia<<",";
+    pthread_mutex_unlock(&io);
     return NULL;
 }
 
 unsigned long bi(0);
 unsigned long ib(0);
-pthread_mutex_t pl;
 void * process2(void *arg)
 {
     do{
         pthread_mutex_lock(&pl);
+        if(ib>=g_LoopCount)
+        {
+            pthread_mutex_unlock(&pl);
+            break;
+        }
         bi=bi+1;
         ++ib;
         pthread_mutex_unlock(&pl);
         usleep(1000*10);
-    }while(ib<g_LoopCount);
+    }while(true);
+    pthread_mutex_lock(&io);
+    cout<<bi<<" "<<ib<<",";
+    pthread_mutex_unlock(&io);
     return NULL;
 }
