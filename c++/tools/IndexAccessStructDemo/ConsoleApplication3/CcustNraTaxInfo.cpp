@@ -1,0 +1,233 @@
+#include "CcustNraTaxInfo.h"
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CcustNraTaxInfo::ST_R1Record::ST_R1Record()
+{
+    this->initValue();
+    this->initMap();
+}
+
+CcustNraTaxInfo::ST_R1Record::~ST_R1Record()
+{
+}
+
+std::ostream & operator<<(std::ostream &os,const CcustNraTaxInfo::ST_R1Record &recorder)
+{
+    os<<"\'"<<recorder.APP_SHEET_SNO<<"\',"<<recorder.TRANS_DATE<<","<<recorder.TRANS_TIME
+        <<",\'"<<recorder.OF_SELLER_CODE<<"\',"<<recorder.INT_ORG<<",\'"<<recorder.OFACCT
+        <<"\',\'"<<recorder.USER_TYPE<<"\',"<<recorder.ORI_APP_DATE<<",\'"<<recorder.ORI_APP_SHEETNO
+        <<"\',\'"<<recorder.SURV_METHOD<<"\',\'"<<recorder.INVEST_CER_FLAG<<"\',\'"<<recorder.NON_RESI_FLAG
+        <<"\',\'"<<recorder.CHN_NAME<<"\',\'"<<recorder.ENG_NAME2<<"\',\'"<<recorder.ENG_FIRST_NAME2
+        <<"\',\'"<<recorder.ENG_FNAME<<"\',\'"<<recorder.SEX<<"\',\'"<<recorder.ADDRESS_TYPE<<"\',\'"
+        <<recorder.LIV_COUNTRY<<"\',\'"<<recorder.LIV_ADDRESS<<"\',\'"<<recorder.LIV_ADDRESS2<<"\',\'"
+        <<recorder.LIV_ADDRESS3<<"\',\'"<<recorder.LIV_ADDRESS4<<"\',"<<recorder.BIRTH_DATE<<",\'"
+        <<recorder.BIRTH_COUNTRY<<"\',\'"<<recorder.BIRTH_ENG_NAME<<"\',\'"<<recorder.BIRTH_CITY<<"\',\'"
+        <<recorder.REG_REGION_CODE<<"\',\'"<<recorder.TAX_COUNTRY<<"\',\'"<<recorder.TAX_ID<<"\',\'"
+        <<recorder.REMARK<<"\',\'"<<recorder.PASSIVE_NFE<<"\',\'"<<recorder.NON_RESCON_FLAG<<"\',\'"
+        <<recorder.CHN_NAME2<<"\',\'"<<recorder.ENG_FAM_NAME3<<"\',\'"<<recorder.ENG_FIRST_NAME3<<"\',\'"
+        <<recorder.CONTROL_TYPE<<"\',\'"<<recorder.CONNON_RESI_FLAG<<"\',\'"<<recorder.CON_SHARE_RATIO<<"\',\'"
+        <<recorder.LIV_COUNTRY2<<"\',\'"<<recorder.LIV_ADDRESS5<<"\',\'"<<recorder.LIV_ADDRESS6<<"\',\'"
+        <<recorder.LIV_ADDRESS7<<"\',\'"<<recorder.LIV_ADDRESS8<<"\',\'"<<recorder.REG_REGION_CODE2<<"\',"
+        <<recorder.BIRTH_DATE2<<",\'"<<recorder.BIRTH_COUNTRY2<<"\',\'"<<recorder.BIRTH_ENG_NAME2<<"\',\'"
+        <<recorder.BIRTH_CITY2<<"\',\'"<<recorder.TAX_COUNTRY2<<"\',\'"<<recorder.TAXID2<<"\',\'"<<recorder.REMARK2
+        <<"\',\'"<<recorder.ADD_FLAG<<"\',\'"<<recorder.RESERVE1<<"\',\'"<<recorder.RESERVE2<<"\',\'"
+        <<recorder.RESERVE3<<"\',\'"<<recorder.RESERVE4<<"\',\'"<<recorder.RESERVE5<<"\',\'"<<recorder.RESERVE6
+        <<"\',\'"<<recorder.DATA_FLAG<<"\',"<<recorder.TA_CODE;
+    return os;
+}
+
+void CcustNraTaxInfo::ST_R1Record::initValue()
+{
+    APP_SHEET_SNO[0]=0;
+    TRANS_DATE[0]=0;
+    TRANS_TIME[0]=0;
+    OF_SELLER_CODE[0]=0;
+    INT_ORG[0]=0;
+    OFACCT[0]=0;
+    USER_TYPE[0]=0;
+    ORI_APP_DATE[0]=0;
+    ORI_APP_SHEETNO[0]=0;
+    SURV_METHOD[0]=0;
+    INVEST_CER_FLAG[0]=0;
+    NON_RESI_FLAG[0]=0;
+    CHN_NAME[0]=0;
+    ENG_NAME2[0]=0;
+    ENG_FIRST_NAME2[0]=0;
+    ENG_FNAME[0]=0;
+    SEX[0]=0;
+    ADDRESS_TYPE[0]=0;
+    LIV_COUNTRY[0]=0;
+    LIV_ADDRESS[0]=0;
+    LIV_ADDRESS2[0]=0;
+    LIV_ADDRESS3[0]=0;
+    LIV_ADDRESS4[0]=0;
+    BIRTH_DATE[0]=0;
+    BIRTH_COUNTRY[0]=0;
+    BIRTH_ENG_NAME[0]=0;
+    BIRTH_CITY[0]=0;
+    REG_REGION_CODE[0]=0;
+    TAX_COUNTRY[0]=0;
+    TAX_ID[0]=0;
+    REMARK[0]=0;
+    PASSIVE_NFE[0]=0;
+    NON_RESCON_FLAG[0]=0;
+    CHN_NAME2[0]=0;
+    ENG_FAM_NAME3[0]=0;
+    ENG_FIRST_NAME3[0]=0;
+    CONTROL_TYPE[0]=0;
+    CONNON_RESI_FLAG[0]=0;
+    CON_SHARE_RATIO[0]=0;
+    LIV_COUNTRY2[0]=0;
+    LIV_ADDRESS5[0]=0;
+    LIV_ADDRESS6[0]=0;
+    LIV_ADDRESS7[0]=0;
+    LIV_ADDRESS8[0]=0;
+    REG_REGION_CODE2[0]=0;
+    BIRTH_DATE2[0]=0;
+    BIRTH_COUNTRY2[0]=0;
+    BIRTH_ENG_NAME2[0]=0;
+    BIRTH_CITY2[0]=0;
+    TAX_COUNTRY2[0]=0;
+    TAXID2[0]=0;
+    REMARK2[0]=0;
+    ADD_FLAG[0]=0;
+    RESERVE1[0]=0;
+    RESERVE2[0]=0;
+    RESERVE3[0]=0;
+    RESERVE4[0]=0;
+    RESERVE5[0]=0;
+    RESERVE6[0]=0;
+    DATA_FLAG[0]=0;
+    TA_CODE[0]=0;
+}
+
+void CcustNraTaxInfo::ST_R1Record::initMap()
+{
+    m_pField[0]=APP_SHEET_SNO;
+    m_fieldSize[0]=32+1;
+    m_pField[1]=TRANS_DATE;
+    m_fieldSize[1]=19+1;
+    m_pField[2]=TRANS_TIME;
+    m_fieldSize[2]=19+1;
+    m_pField[3]=OF_SELLER_CODE;
+    m_fieldSize[3]=16+1;
+    m_pField[4]=INT_ORG;
+    m_fieldSize[4]=10+1;
+    m_pField[5]=OFACCT;
+    m_fieldSize[5]=12+1;
+    m_pField[6]=USER_TYPE;
+    m_fieldSize[6]=1+1;
+    m_pField[7]=ORI_APP_DATE;
+    m_fieldSize[7]=10+1;
+    m_pField[8]=ORI_APP_SHEETNO;
+    m_fieldSize[8]=32+1;
+    m_pField[9]=SURV_METHOD;
+    m_fieldSize[9]=1+1;
+
+    m_pField[10]=INVEST_CER_FLAG;
+    m_fieldSize[10]=1+1;
+    m_pField[11]=NON_RESI_FLAG;
+    m_fieldSize[11]=1+1;
+    m_pField[12]=CHN_NAME;
+    m_fieldSize[12]=128+1;
+    m_pField[13]=ENG_NAME2;
+    m_fieldSize[13]=128+1;
+    m_pField[14]=ENG_FIRST_NAME2;
+    m_fieldSize[14]=128+1;
+    m_pField[15]=ENG_FNAME;
+    m_fieldSize[15]=256+1;
+    m_pField[16]=SEX;
+    m_fieldSize[16]=1+1;
+    m_pField[17]=ADDRESS_TYPE;
+    m_fieldSize[17]=3+1;
+    m_pField[18]=LIV_COUNTRY;
+    m_fieldSize[18]=3+1;
+    m_pField[19]=LIV_ADDRESS;
+    m_fieldSize[19]=384+1;
+
+    m_pField[20]=LIV_ADDRESS2;
+    m_fieldSize[20]=384+1;
+    m_pField[21]=LIV_ADDRESS3;
+    m_fieldSize[21]=384+1;
+    m_pField[22]=LIV_ADDRESS4;
+    m_fieldSize[22]=384+1;
+    m_pField[23]=BIRTH_DATE;
+    m_fieldSize[23]=10+1;
+    m_pField[24]=BIRTH_COUNTRY;
+    m_fieldSize[24]=3+1;
+    m_pField[25]=BIRTH_ENG_NAME;
+    m_fieldSize[25]=256+1;
+    m_pField[26]=BIRTH_CITY;
+    m_fieldSize[26]=256+1;
+    m_pField[27]=REG_REGION_CODE;
+    m_fieldSize[27]=2+1;
+    m_pField[28]=TAX_COUNTRY;
+    m_fieldSize[28]=3+1;
+    m_pField[29]=TAX_ID;
+    m_fieldSize[29]=256+1;
+
+    m_pField[30]=REMARK;
+    m_fieldSize[30]=64+1;
+    m_pField[31]=PASSIVE_NFE;
+    m_fieldSize[31]=1+1;
+    m_pField[32]=NON_RESCON_FLAG;
+    m_fieldSize[32]=1+1;
+    m_pField[33]=CHN_NAME2;
+    m_fieldSize[33]=128+1;
+    m_pField[34]=ENG_FAM_NAME3;
+    m_fieldSize[34]=128+1;
+    m_pField[35]=ENG_FIRST_NAME3;
+    m_fieldSize[35]=128+1;
+    m_pField[36]=CONTROL_TYPE;
+    m_fieldSize[36]=8+1;
+    m_pField[37]=CONNON_RESI_FLAG;
+    m_fieldSize[37]=1+1;
+    m_pField[38]=CON_SHARE_RATIO;
+    m_fieldSize[38]=8+1;
+    m_pField[39]=LIV_COUNTRY2;
+    m_fieldSize[39]=3+1;
+
+    m_pField[40]=LIV_ADDRESS5;
+    m_fieldSize[40]=384+1;
+    m_pField[41]=LIV_ADDRESS6;
+    m_fieldSize[41]=384+1;
+    m_pField[42]=LIV_ADDRESS7;
+    m_fieldSize[42]=384+1;
+    m_pField[43]=LIV_ADDRESS8;
+    m_fieldSize[43]=384+1;
+    m_pField[44]=REG_REGION_CODE2;
+    m_fieldSize[44]=2+1;
+    m_pField[45]=BIRTH_DATE2;
+    m_fieldSize[45]=10+1;
+    m_pField[46]=BIRTH_COUNTRY2;
+    m_fieldSize[46]=3+1;
+    m_pField[47]=BIRTH_ENG_NAME2;
+    m_fieldSize[47]=256+1;
+    m_pField[48]=BIRTH_CITY2;
+    m_fieldSize[48]=128+1;
+    m_pField[49]=TAX_COUNTRY2;
+    m_fieldSize[49]=3+1;
+
+    m_pField[50]=TAXID2;
+    m_fieldSize[50]=256+1;
+    m_pField[51]=REMARK2;
+    m_fieldSize[51]=64+1;
+    m_pField[52]=ADD_FLAG;
+    m_fieldSize[52]=1+1;
+    m_pField[53]=RESERVE1;
+    m_fieldSize[53]=32+1;
+    m_pField[54]=RESERVE2;
+    m_fieldSize[54]=32+1;
+    m_pField[55]=RESERVE3;
+    m_fieldSize[55]=32+1;
+    m_pField[56]=RESERVE4;
+    m_fieldSize[56]=16+1;
+    m_pField[57]=RESERVE5;
+    m_fieldSize[57]=16+1;
+    m_pField[58]=RESERVE6;
+    m_fieldSize[58]=384+1;
+    m_pField[59]=DATA_FLAG;
+    m_fieldSize[59]=1+1;
+
+    m_pField[60]=TA_CODE;
+    m_fieldSize[60]=10+1;
+}
