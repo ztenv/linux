@@ -1,6 +1,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ public:
      * @return 0:成功，-1：token非法
      */
     template<typename func>
-    static int SplitString(const string &str,func f,const char *token=",")
+    static int split(const string &str,func f,const char *token=",")
     {
         int res=-1;
         if(token!=NULL)
@@ -46,8 +47,43 @@ public:
         }
         return res;
     }
-};
 
+
+    /**
+     * @brief 按token分割字符串
+     *
+     * @param[in] str 待分隔的字符串
+     * @param[in] result 分割后子串的结果集
+     * @param[in] token 分割符
+     *
+     * @return 0:成功，-1：token非法
+     */
+    static int split(const string &str,std::vector<std::string> &result,const char *token=",")
+    {
+        result.reserve(20);
+        return split(str,split_functor(result),token);
+    }
+private:
+
+    /**
+     * @brief split使用的仿函数，将分割的子串存储到vector中
+     */
+    class split_functor
+    {
+    public:
+        typedef std::vector<std::string> StringVector;
+        split_functor(StringVector &result):m_sv(result)
+        {
+        }
+        void operator()(const char *value)
+        {
+            m_sv.push_back(std::string(value));
+        }
+    private:
+        StringVector &m_sv;
+    };
+};
+///////////////////////////////////////////////////////////////////////////////////////////
 class printer
 {
 public:
@@ -69,41 +105,7 @@ public:
 private:
     int i;
 };
-
-struct ST_Data{
-    class printer2
-    {
-    public:
-        printer2():i(0)
-        {
-        }
-        void operator ()(const char *value)
-        {
-            cout<<++i<<":"<<value<<endl;
-        }
-    private:
-        int i;
-    };
-
-    class printer3
-    {
-    public:
-        printer3():i(0)
-        {
-        }
-        void operator ()(const char *value)
-        {
-            cout<<++i<<"|"<<value<<endl;
-        }
-    private:
-        int i;
-    };
-
-    printer2 p2;
-    printer3 p3;
-};
-
-void print(const char * v)
+void printer3(const char * v)
 {
     cout<<"print:"<<v<<endl;
 }
@@ -113,41 +115,51 @@ int main(int argc,char *argv[])
    {
        cout<<"1_________________________________________________"<<endl;
        std::string s(",aa,bb,cc,dd,");
-       StringHelper::SplitString(s,printer2());
+       StringHelper::split(s,printer2());
    }
 
    {
        cout<<"2_________________________________________________"<<endl;
        std::string s(",aa,bb,cc,dd,,,ee,");
-       StringHelper::SplitString(s,printer2());
+       StringHelper::split(s,printer2());
    }
 
    {
        cout<<"3_________________________________________________"<<endl;
        std::string s("||||||aa||bb||||dd||||");
        printer2 p;
-       StringHelper::SplitString(s,p,"||");
-       StringHelper::SplitString(s,print,"||");
+       StringHelper::split(s,p,"||");
+       StringHelper::split(s,printer3,"||");
    }
 
    {
        cout<<"4_________________________________________________"<<endl;
        std::string s("||,||,||aa||bb||||dd||||");
-       StringHelper::SplitString(s,printer2(),"||");
+       StringHelper::split(s,printer2(),"||");
    }
 
    {
        cout<<"5_________________________________________________"<<endl;
        std::string s("");
-       StringHelper::SplitString(s,printer2(),NULL);
+       StringHelper::split(s,printer2(),NULL);
    }
 
    {
        cout<<"6_________________________________________________"<<endl;
        std::string s("||||||aa||bb||||dd||||");
-       ST_Data data;
-       StringHelper::SplitString(s,data.p2,"||");
-       StringHelper::SplitString(s,data.p3,"||");
+       StringHelper::split(s,printer3,"||");
+   }
+
+   {
+       cout<<"7_________________________________________________"<<endl;
+       std::string s("1||2|3|4||aa||bb||||dd||||");
+       std::vector<std::string> result;
+       result.reserve(100);
+       StringHelper::split(s,result,"||");
+       for(size_t i=0;i<result.size();++i)
+       {
+           cout<<result[i]<<endl;
+       }
    }
 }
 
