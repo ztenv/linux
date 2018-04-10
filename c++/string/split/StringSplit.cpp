@@ -115,7 +115,8 @@ int main(int argc,char *argv[])
    {
        cout<<"1_________________________________________________"<<endl;
        std::string s(",aa,bb,cc,dd,");
-       StringHelper::split(s,printer2());
+       printer2 p;
+       StringHelper::split(s,p);
    }
 
    {
