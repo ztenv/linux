@@ -69,7 +69,7 @@ public:
      */
     static int split(const string &str,std::vector<std::string> &result,const char *token=",")
     {
-        result.reserve(20);
+        result.reserve(100);
         return split(str,split_functor(result),token);
     }
 private:
