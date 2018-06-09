@@ -80,6 +80,7 @@ namespace kingdom{
                     break;
                 }
                 m_recordCount=m_recordSet->GetRecordCount();
+                m_contextPtr->getResultPtr()->TotalRecordCount=m_recordCount;
             } while(0);
         }
         catch(_com_error e)
@@ -93,7 +94,8 @@ namespace kingdom{
     inline int CSqlServer::reEncrypt(ST_DataRecord &record,_RecordsetPtr &recordSet)
     {
         char GM[257];
-
+        GM[0]=0;
+        memset(GM,0,sizeof(GM));
         snprintf(record.UserCode,sizeof(record.UserCode),"%lld",recordSet->GetCollect("USER_CODE").llVal);
         record.UserRole=*recordSet->GetCollect("USER_ROLE").pcVal;
         record.UserScope=*recordSet->GetCollect("USE_SCOPE").pcVal;
@@ -102,8 +104,12 @@ namespace kingdom{
         strcpy(record.AuthData,((_bstr_t)recordSet->GetCollect("AUTH_DATA")));
         //cout<<index<<":"<<record.UserCode<<"   "<<record.UserRole<<"   "<<record.UserScope<<"    "<<record.AuthType<<"   "<<record.AuthData
         //    <<"    "<<record.AuthDataType<<"    "<<percent<<"%"<<endl;
-        int res=CipherToGMCipher((unsigned char*)GM,sizeof(GM),(unsigned char*)record.UserCode,strlen(record.UserCode),(unsigned char*)record.AuthData,strlen(record.AuthData),(unsigned char *)record.UserCode,strlen(record.UserCode),EM_PLATFORM_KBSS);
-        return res;
+        if((record.AuthData[0]!=0)||(record.AuthData[0]==' ')&&(record.AuthData[1]!=0))
+        {
+            return CipherToGMCipher((unsigned char*)GM,sizeof(GM),(unsigned char*)record.UserCode,strlen(record.UserCode),(unsigned char*)record.AuthData,strlen(record.AuthData),(unsigned char *)record.UserCode,strlen(record.UserCode),EM_PLATFORM_W);
+            cout<<record.UserCode<<":"<<record.AuthData<<":"<<GM<<endl;
+        }
+        return 0;
     }
 
     inline int CSqlServer::commit(_RecordsetPtr recordSet)
@@ -138,7 +144,7 @@ namespace kingdom{
 
     void CSqlServer::traversalResult()
     {
-        cout<<"AUTH_INFO has "<<m_recordCount<<" records to be re-Encrypt"<<endl;
+        //cout<<"AUTH_INFO has "<<m_recordCount<<" records to be re-Encrypt"<<endl;
         if(m_recordCount<=0)
         {
             return;
@@ -146,20 +152,19 @@ namespace kingdom{
 
         int res=0;
         ST_DataRecord record;
+        cout<<"processing..."<<endl;
         boost::progress_display pd(m_recordCount);
         while(!m_recordSet->adoEOF)
         {
-            do{
-                if((res=reEncrypt(record,m_recordSet))<=0)
-                {
-                    cout<<"CiptherToGMCipher error:"<<res<<endl;
-                    break;
-                }
-                if((res=updateRecord(record,m_recordSet))<0)
-                {
-                    break;
-                }
-            } while(0);
+            if(((res=reEncrypt(record,m_recordSet))<0)||((res=updateRecord(record,m_recordSet))<0))
+            {
+                //cout<<"USER_CODE="<<record.UserCode<<" CiptherToGMCipher error:"<<res<<endl;
+                ++m_contextPtr->getResultPtr()->FailingRecordCount;
+                m_contextPtr->getResultPtr()->FailingInfo.push_back(record.UserCode);
+            }
+            else{
+                ++m_contextPtr->getResultPtr()->SuccessfulRecordCount;
+            }
             ++pd;
             m_recordSet->MoveNext();
         }

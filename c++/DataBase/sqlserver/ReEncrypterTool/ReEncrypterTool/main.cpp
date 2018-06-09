@@ -62,7 +62,10 @@ int main(int argc,char *argv[])
     }
 
     bpt::ptime stop=bpt::microsec_clock::local_time();
-    cout<<"All works have been done.it used "<<stop-start<<" seconds."<<endl;
+
+    contexPtr->getResultPtr()->UsedTime=stop-start;
+    //cout<<"All works have been done.it used "<<contexPtr->getResultPtr()->UsedTime<<" seconds."<<endl;
+    cout<<*contexPtr->getResultPtr()<<endl;
 
     getchar();
     return 0;
