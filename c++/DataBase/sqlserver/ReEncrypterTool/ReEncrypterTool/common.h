@@ -50,6 +50,9 @@ namespace kingdom{
          * @brief 旧的密文
          */
         char AuthData[257];
+        /**
+         * @brief 用于存储新的(国密)密文
+         */
         char AuthNewData[257];
     };
     typedef boost::shared_ptr<ST_DataRecord> ST_DataRecordPtr;
