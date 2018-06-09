@@ -19,8 +19,9 @@ namespace kingdom{
     public:
         ST_DataRecord():UserRole(-1),UserScope(-1),AuthType(-1),AuthDataType(-1)
         {
-            AuthData[0]=0;
             UserCode[0]=0;
+            AuthData[0]=0;
+            AuthNewData[0]=0;
         }
         ~ST_DataRecord()
         {}
@@ -46,14 +47,15 @@ namespace kingdom{
          */
         char AuthDataType;
         /**
-         * @brief 密文
+         * @brief 旧的密文
          */
         char AuthData[257];
+        char AuthNewData[257];
     };
     typedef boost::shared_ptr<ST_DataRecord> ST_DataRecordPtr;
 
     /**
-     * @brief 处理结果
+     * @brief 操作结果
      */
     struct ST_Result{
     public:
@@ -63,11 +65,11 @@ namespace kingdom{
         {}
 
         /**
-         * @brief 耗时
+         * @brief 总耗时
          */
         boost::posix_time::time_duration UsedTime;
         /**
-         * @brief 成功的记录条数
+         * @brief 成功的记录数
          */
         unsigned long long SuccessfulRecordCount;
         /**
@@ -75,7 +77,7 @@ namespace kingdom{
          */
         unsigned long long FailingRecordCount;
         /**
-         * @brief 总记录数
+         * @brief 总的记录数
          */
         long long TotalRecordCount;
         /**
@@ -83,10 +85,19 @@ namespace kingdom{
          */
         std::list<std::string> FailingInfo;
 
+        /**
+         * @brief 输出操作符
+         *
+         * @param[in] oss    输出流
+         * @param[in] result 操作结果
+         *
+         * @return 输出流本身
+         */
         friend std::ostream & operator <<(std::ostream &oss,ST_Result &result);
     };
-    typedef boost::shared_ptr<ST_Result> ST_ResultPtr;
 
+
+    typedef boost::shared_ptr<ST_Result> ST_ResultPtr;
     /**
      * @brief 上下文
      */
@@ -139,10 +150,11 @@ namespace kingdom{
             m_password=password;
         }
 
+
         /**
-         * @brief 获取结果
+         * @brief 获取结果指针
          *
-         * @return 结果
+         * @return 结果指针
          */
         ST_ResultPtr getResultPtr()
         {

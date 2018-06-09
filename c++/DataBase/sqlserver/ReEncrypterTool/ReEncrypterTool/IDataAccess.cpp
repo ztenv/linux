@@ -29,7 +29,10 @@ namespace kingdom{
                 cout<<"query error,res="<<res<<endl;
                 break;
             }
-            this->traversalResult();
+            if(m_recordCount>0)
+            {
+                this->traversalResult();
+            }
             if((res=this->close())!=0)
             {
                 cout<<"close error,res="<<endl;

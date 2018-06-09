@@ -1,7 +1,5 @@
 #include "common.h"
-
 namespace kingdom{
-
     std::ostream & operator<<(std::ostream &oss,ST_Result &result)
     {
         oss<<"All works have been done.it used "<<result.UsedTime<<" seconds"<<std::endl;

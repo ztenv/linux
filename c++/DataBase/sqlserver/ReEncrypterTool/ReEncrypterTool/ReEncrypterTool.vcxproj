@@ -161,6 +161,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="common.cpp" />
     <ClCompile Include="IDataAccess.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SqlServer.cpp" />
