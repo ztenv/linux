@@ -53,10 +53,10 @@ namespace kingdom{
         virtual void traversalResult();
         virtual void unInitialize();
     private:
-        void beginTrans(_ConnectionPtr con);
-        void commitTrans(_ConnectionPtr con);
-
-        void updateRecord();
+        inline void beginTrans(_ConnectionPtr con);
+        inline void commitTrans(_ConnectionPtr con);
+        inline void fetchData(ST_DataRecord &record);
+        inline void updateRecord();
 
     };
 

@@ -121,7 +121,7 @@ namespace kingdom{
         return res;
     }
 
-    void CSqlServer::updateRecord()
+    inline void CSqlServer::updateRecord()
     {
         {
             boost::unique_lock<boost::mutex> locker(m_mutex);
@@ -164,6 +164,16 @@ namespace kingdom{
         }
         this->commitTrans(con);
     }
+    inline void CSqlServer::fetchData(ST_DataRecord &record)
+    {
+        snprintf(record.UserCode,sizeof(record.UserCode),"%lld",m_recordSet->GetCollect("USER_CODE").llVal);
+        record.UserRole=*m_recordSet->GetCollect("USER_ROLE").pcVal;
+        record.UserScope=*m_recordSet->GetCollect("USE_SCOPE").pcVal;
+        record.AuthType=*m_recordSet->GetCollect("AUTH_TYPE").pcVal;
+        record.AuthDataType=*m_recordSet->GetCollect("AUTH_DATA_TYPE").pcVal;
+        record.AuthNewData[0]=0;
+        strcpy(record.AuthData,((_bstr_t)m_recordSet->GetCollect("AUTH_DATA")));
+    }
 
     void CSqlServer::traversalResult()
     {
@@ -173,14 +183,7 @@ namespace kingdom{
         boost::progress_display pd(m_recordCount);
         while(!m_recordSet->adoEOF)
         {
-            snprintf(record.UserCode,sizeof(record.UserCode),"%lld",m_recordSet->GetCollect("USER_CODE").llVal);
-            record.UserRole=*m_recordSet->GetCollect("USER_ROLE").pcVal;
-            record.UserScope=*m_recordSet->GetCollect("USE_SCOPE").pcVal;
-            record.AuthType=*m_recordSet->GetCollect("AUTH_TYPE").pcVal;
-            record.AuthDataType=*m_recordSet->GetCollect("AUTH_DATA_TYPE").pcVal;
-            record.AuthNewData[0]=0;
-            strcpy(record.AuthData,((_bstr_t)m_recordSet->GetCollect("AUTH_DATA")));
-
+            this->fetchData(record);
             if((res=reEncrypt(record))<0)
             {
                 ++m_contextPtr->getResultPtr()->FailingRecordCount;
@@ -203,7 +206,7 @@ namespace kingdom{
         ::CoUninitialize();
     }
 
-    void CSqlServer::beginTrans(_ConnectionPtr con)
+    inline void CSqlServer::beginTrans(_ConnectionPtr con)
     {
         try
         {
@@ -215,7 +218,7 @@ namespace kingdom{
         }
     }
 
-    void CSqlServer::commitTrans(_ConnectionPtr con)
+    inline void CSqlServer::commitTrans(_ConnectionPtr con)
     {
         try
         {

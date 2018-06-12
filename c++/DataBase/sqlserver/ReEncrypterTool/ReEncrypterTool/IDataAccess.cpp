@@ -60,6 +60,7 @@ namespace kingdom{
         }
         return -1;
     }
+
     int IDataAccess::initialize(ContextPtr contextPtr)
     {
         m_contextPtr=contextPtr;
