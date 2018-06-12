@@ -16,10 +16,22 @@
 namespace kingdom{
     typedef std::map<boost::thread::id,_ConnectionPtr> ConnectionPoolMap;
 
+    /**
+     * @brief 连接池上下文
+     */
     struct ST_ConnectionContext
     {
+        /**
+         * @brief 线程、数据库连接的数量
+         */
         static const size_t ThreadCount=4;
+        /**
+         * @brief 简单连接池
+         */
         ConnectionPoolMap ConnectionPool;
+        /**
+         * @brief 简单线程池
+         */
         boost::thread_group ThreadGroup;
     };
 
@@ -44,9 +56,31 @@ namespace kingdom{
         virtual void traversalResult();
         virtual void unInitialize();
     private:
+
+        /**
+         * @brief 开始事务
+         *
+         * @param[in] con 数据库的连接
+         */
         inline void beginTrans(_ConnectionPtr con);
+
+        /**
+         * @brief 提交事件
+         *
+         * @param[in] con 数据库连接
+         */
         inline void commitTrans(_ConnectionPtr con);
+
+        /**
+         * @brief 读取数据
+         *
+         * @param[in] record 存储数据的对象
+         */
         inline void fetchData(ST_DataRecord &record);
+
+        /**
+         * @brief 更新数据库的记录
+         */
         inline void updateRecord();
 
     };
