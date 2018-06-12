@@ -86,10 +86,10 @@ int main(int argc,char *argv[])
     bpt::ptime stop=bpt::microsec_clock::local_time();
 
     contexPtr->getResultPtr()->UsedTime=stop-start;
-    //cout<<"All works have been done.it used "<<contexPtr->getResultPtr()->UsedTime<<" seconds."<<endl;
     cout<<*contexPtr->getResultPtr()<<endl;
 
     contexPtr->getResultPtr()->dump();
+    cout<<"press Enter key to continue..."<<endl;
     getchar();
     return 0;
 }

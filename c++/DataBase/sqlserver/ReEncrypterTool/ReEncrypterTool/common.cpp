@@ -7,11 +7,11 @@ namespace kingdom{
     std::ostream & operator<<(std::ostream &oss,ST_Result &result)
     {
         oss<<"All works have been done.it used "<<result.UsedTime<<" seconds"<<std::endl;
-        oss<<"TotalRecordCount:"<<result.TotalRecordCount<<std::endl;
+        oss<<"     Total count:"<<result.TotalRecordCount<<std::endl;
         oss<<"Successful count:"<<result.SuccessfulRecordCount<<std::endl;
         oss<<"    Failed count:"<<result.FailingRecordCount<<std::endl;
         result.m_fileName=boost::posix_time::to_iso_string(boost::posix_time::second_clock::local_time())+"run.log";
-        oss<<"Detail info see "<<result.m_fileName<<" file"<<std::endl;
+        oss<<"please see "<<result.m_fileName<<" file for more detail info."<<std::endl;
         return oss;
     }
 
