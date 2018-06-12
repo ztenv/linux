@@ -11,28 +11,28 @@ namespace kingdom{
         oss<<"Successful count:"<<result.SuccessfulRecordCount<<std::endl;
         oss<<"    Failed count:"<<result.FailingRecordCount<<std::endl;
         result.m_fileName=boost::posix_time::to_iso_string(boost::posix_time::second_clock::local_time())+"run.log";
-        oss<<"please see "<<result.m_fileName<<" file for more detail info."<<std::endl;
+        oss<<"Please see "<<result.m_fileName<<" file for more detail info."<<std::endl;
         return oss;
     }
 
     void ST_Result::dump()
     {
-        fstream of;
-        of.open(m_fileName,ios::out);
-        of<<"All works have been done.it used "<<UsedTime<<" seconds"<<std::endl;
-        of<<"TotalRecordCount:"<<TotalRecordCount<<std::endl;
-        of<<"Successful count:"<<SuccessfulRecordCount<<std::endl;
-        of<<"    Failed count:"<<FailingRecordCount<<std::endl;
+        fstream ofs;
+        ofs.open(m_fileName,ios::out);
+        ofs<<"All works have been done.it used "<<UsedTime<<" seconds"<<std::endl;
+        ofs<<"TotalRecordCount:"<<TotalRecordCount<<std::endl;
+        ofs<<"Successful count:"<<SuccessfulRecordCount<<std::endl;
+        ofs<<"    Failed count:"<<FailingRecordCount<<std::endl;
         if(this->FailingRecordCount>0)
         {
-            of<<"Failed Record USER_CODE info:"<<std::endl;
+            ofs<<"Failed Record USER_CODE info:"<<std::endl;
             std::list<std::string>::const_iterator citer=FailingInfo.begin();
             while(citer!=FailingInfo.end())
             {
-                of<<"    "<<*citer<<std::endl;
+                ofs<<"    "<<*citer<<std::endl;
                 ++citer;
             }
         }
-        of.close();
+        ofs.close();
     }
 }

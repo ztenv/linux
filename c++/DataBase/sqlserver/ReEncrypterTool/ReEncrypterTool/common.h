@@ -109,15 +109,13 @@ namespace kingdom{
      */
     class Context{
     public:
-        Context()
+        Context():m_dbName("kbssacct")
         {
 #ifdef _WIN32
             m_ip="127.0.0.1";
 #else
             m_ip="127.0.0.1:1521";
 #endif
-            m_dbName="kbssacct";
-
             m_resultPtr=ST_ResultPtr(new ST_Result());
         }
         ~Context()
@@ -163,22 +161,47 @@ namespace kingdom{
             m_password=password;
         }
 
+
+        /**
+         * @brief 获取数据库的ip
+         *
+         * @return 数据库的ip地址
+         */
         std::string &getIP()
         {
             return m_ip;
         }
+
+        /**
+         * @brief 设置数据库的ip
+         *
+         * @param[in] ip 数据库的ip
+         */
         void setIP(const std::string &ip)
         {
             m_ip=ip;
         }
+
+        /**
+         * @brief 获取数据库名
+         *
+         * @return 数据库名
+         */
         std::string &getDBName()
         {
             return m_dbName;
         }
+
+        /**
+         * @brief 设置数据库名
+         *
+         * @param[in] dbName 数据库名
+         */
         void setDBName(const std::string &dbName)
         {
             m_dbName=dbName;
         }
+
         /**
          * @brief 获取结果指针
          *

@@ -6,7 +6,7 @@
 namespace kingdom{
     using namespace std;
 
-    IDataAccess::IDataAccess():m_contextPtr(0),m_recordCount(0)
+    IDataAccess::IDataAccess():m_contextPtr(0),m_recordCount(0),m_isReady(false),m_runFlag(true)
     {}
 
     IDataAccess::~IDataAccess()

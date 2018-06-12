@@ -8,7 +8,7 @@
 using namespace std;
 namespace kingdom{
 
-    CSqlServer::CSqlServer():m_isReady(false),m_runFlag(true)
+    CSqlServer::CSqlServer()
     {
     }
 

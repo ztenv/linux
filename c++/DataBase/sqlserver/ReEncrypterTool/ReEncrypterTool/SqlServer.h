@@ -7,10 +7,6 @@
  */
 #pragma once
 #include <map>
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/atomic.hpp>
-#include <boost/thread.hpp>
-#include <boost/thread/condition_variable.hpp>
 
 #include "IDataAccess.h"
 #include "common.h"
@@ -39,11 +35,6 @@ namespace kingdom{
     protected:
         _ConnectionPtr m_connection;
         _RecordsetPtr m_recordSet;
-        DataRecordList m_list;
-        boost::atomic<bool> m_isReady;
-        boost::condition_variable m_cv;
-        boost::mutex m_mutex;
-        boost::atomic<bool> m_runFlag;
         ST_ConnectionContext m_ConnectionContext;
 
         virtual int initialize(ContextPtr contextPtr);

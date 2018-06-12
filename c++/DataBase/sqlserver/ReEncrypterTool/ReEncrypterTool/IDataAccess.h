@@ -7,6 +7,10 @@
  */
 #pragma once
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/shared_mutex.hpp>
+#include <boost/atomic.hpp>
+#include <boost/thread.hpp>
+#include <boost/thread/condition_variable.hpp>
 #include "common.h"
 
 namespace kingdom{
@@ -35,6 +39,26 @@ namespace kingdom{
          * @brief 查询到的记录数
          */
         long m_recordCount;
+        /**
+         * @brief 记录列表
+         */
+        DataRecordList m_list;
+        /**
+         * @brief 线程需要的环境是否就绪
+         */
+        boost::atomic<bool> m_isReady;
+        /**
+         * @brief 线程等待就绪的条件
+         */
+        boost::condition_variable m_cv;
+        /**
+         * @brief m_list、m_cv的互斥锁
+         */
+        boost::mutex m_mutex;
+        /**
+         * @brief 运行状态
+         */
+        boost::atomic<bool> m_runFlag;
 
         /**
         * @brief 重加密，把AUTH_DATA的原始密文转换为国密密文

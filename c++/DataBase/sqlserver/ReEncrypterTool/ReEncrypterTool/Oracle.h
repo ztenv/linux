@@ -8,6 +8,9 @@
 
 namespace kingdom{
 
+    /**
+     * @brief oracle 数据库访问类
+     */
     class COracle:public IDataAccess
     {
     public:
@@ -15,11 +18,6 @@ namespace kingdom{
         virtual ~COracle();
 
     protected:
-        DataRecordList m_list;
-        boost::atomic<bool> m_isReady;
-        boost::condition_variable m_cv;
-        boost::mutex m_mutex;
-        boost::atomic<bool> m_runFlag;
 
         virtual int initialize(ContextPtr contextPtr);
         virtual int connect();
