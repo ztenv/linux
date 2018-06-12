@@ -94,7 +94,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>KDStorageCrypt.lib;libcrypto.lib;libssl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>KDStorageCrypt.lib;libcrypto.lib;libssl.lib;oraocci11d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib\;$(BOOST_ROOT)\stage\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -156,6 +156,7 @@
     <ClInclude Include="..\include\kdstoragecrypt.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="IDataAccess.h" />
+    <ClInclude Include="Oracle.h" />
     <ClInclude Include="SqlServer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="common.cpp" />
     <ClCompile Include="IDataAccess.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Oracle.cpp" />
     <ClCompile Include="SqlServer.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>

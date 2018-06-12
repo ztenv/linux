@@ -22,15 +22,24 @@ using namespace std;
 using namespace kingdom;
 namespace po=boost::program_options;
 namespace bpt=boost::posix_time;
+#define  __version__ "1.0.0.0"
 
 int main(int argc,char *argv[])
 {
     po::options_description od("command options");
-    std::string user,pwd;
+    std::string user,pwd,ip,dbName;
     od.add_options() ("help,h","list help info")
         ("username,u",po::value<std::string>(&user)->default_value("sa"),"kbssacct database user name")
         ("password,p",po::value<std::string>(&pwd)->default_value("sa"),"kbssacct database user password")
+#ifdef _WIN32
+        ("ip,i",po::value<std::string>(&ip)->default_value("127.0.0.1"),"mssql server ip")
+#else
+        ("ip,i",po::value<std::string>(&ip)->default_value("127.0.0.1:1521"),"oracle ip and port")
+#endif
+        ("dbName,d",po::value<std::string>(&dbName)->default_value("kbssacct"),"database name")
+        ("version,v","list version")
         ;
+
     try
     {
         po::variables_map vm;
@@ -39,6 +48,11 @@ int main(int argc,char *argv[])
         if(vm.count("help")||argc==1)
         {
             cout<<od<<endl;
+            return 0;
+        }
+        if(vm.count("version"))
+        {
+            cout<<__version__<<endl;
             return 0;
         }
     }
@@ -50,9 +64,15 @@ int main(int argc,char *argv[])
     ContextPtr contexPtr=ContextPtr(new Context());
     contexPtr->setUserName(user);
     contexPtr->setPassword(pwd);
+    contexPtr->setIP(ip);
+    contexPtr->setDBName(dbName);
 
     int res=0;
-    boost::shared_ptr<IDataAccess> pdaPtr(new CSqlServer());
+#ifdef _WIN32
+    IDataAccessPtr pdaPtr(new CSqlServer());
+#else
+    IDataAccessPtr pdaPtr(new COracle());
+#endif
     bpt::ptime start=bpt::microsec_clock::local_time();
 
     res=pdaPtr->doWork(contexPtr);
@@ -67,6 +87,7 @@ int main(int argc,char *argv[])
     //cout<<"All works have been done.it used "<<contexPtr->getResultPtr()->UsedTime<<" seconds."<<endl;
     cout<<*contexPtr->getResultPtr()<<endl;
 
+    contexPtr->getResultPtr()->dump();
     getchar();
     return 0;
 }

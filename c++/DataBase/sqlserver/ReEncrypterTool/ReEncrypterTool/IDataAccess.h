@@ -6,6 +6,7 @@
  * @date 2018/06/08
  */
 #pragma once
+#include <boost/shared_ptr.hpp>
 #include "common.h"
 
 namespace kingdom{
@@ -76,5 +77,5 @@ namespace kingdom{
          */
         virtual void unInitialize()=0;
     };
-
+    typedef boost::shared_ptr<IDataAccess> IDataAccessPtr;
 }

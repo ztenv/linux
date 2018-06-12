@@ -56,6 +56,7 @@ namespace kingdom{
         char AuthNewData[257];
     };
     typedef boost::shared_ptr<ST_DataRecord> ST_DataRecordPtr;
+    typedef std::list<ST_DataRecordPtr> DataRecordList;
 
     /**
      * @brief 操作结果
@@ -88,6 +89,7 @@ namespace kingdom{
          */
         std::list<std::string> FailingInfo;
 
+        void dump();
         /**
          * @brief 输出操作符
          *
@@ -97,10 +99,11 @@ namespace kingdom{
          * @return 输出流本身
          */
         friend std::ostream & operator <<(std::ostream &oss,ST_Result &result);
+    private:
+        std::string m_fileName;
     };
-
-
     typedef boost::shared_ptr<ST_Result> ST_ResultPtr;
+
     /**
      * @brief 上下文
      */
@@ -108,6 +111,13 @@ namespace kingdom{
     public:
         Context()
         {
+#ifdef _WIN32
+            m_ip="127.0.0.1";
+#else
+            m_ip="127.0.0.1:1521";
+#endif
+            m_dbName="kbssacct";
+
             m_resultPtr=ST_ResultPtr(new ST_Result());
         }
         ~Context()
@@ -128,7 +138,7 @@ namespace kingdom{
          *
          * @param[in] userName 数据库的用户名
          */
-        void setUserName(const std::string userName)
+        void setUserName(const std::string &userName)
         {
             m_userName=userName;
         }
@@ -148,12 +158,27 @@ namespace kingdom{
          *
          * @param[in] password 数据库的密码
          */
-        void setPassword(const std::string password)
+        void setPassword(const std::string &password)
         {
             m_password=password;
         }
 
-
+        std::string &getIP()
+        {
+            return m_ip;
+        }
+        void setIP(const std::string &ip)
+        {
+            m_ip=ip;
+        }
+        std::string &getDBName()
+        {
+            return m_dbName;
+        }
+        void setDBName(const std::string &dbName)
+        {
+            m_dbName=dbName;
+        }
         /**
          * @brief 获取结果指针
          *
@@ -164,9 +189,11 @@ namespace kingdom{
             return m_resultPtr;
         }
     private:
+        ST_ResultPtr m_resultPtr;
         std::string m_userName;
         std::string m_password;
-        ST_ResultPtr m_resultPtr;
+        std::string m_ip;
+        std::string m_dbName;
     };
     typedef boost::shared_ptr<Context> ContextPtr;
 }

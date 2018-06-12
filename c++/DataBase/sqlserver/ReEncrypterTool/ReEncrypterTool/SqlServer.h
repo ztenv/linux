@@ -6,11 +6,27 @@
  * @date 2018/06/08
  */
 #pragma once
+#include <map>
+#include <boost/thread/shared_mutex.hpp>
+#include <boost/atomic.hpp>
+#include <boost/thread.hpp>
+#include <boost/thread/condition_variable.hpp>
+
 #include "IDataAccess.h"
 #include "common.h"
+
 #import "c:\Program Files\Common Files\System\ado\msado15.dll" no_namespace rename("EOF","adoEOF") rename("BOF","adoBOF")
 
 namespace kingdom{
+    typedef std::map<boost::thread::id,_ConnectionPtr> ConnectionPoolMap;
+
+    struct ST_ConnectionContext
+    {
+        static const size_t ThreadCount=4;
+        ConnectionPoolMap ConnectionPool;
+        boost::thread_group ThreadGroup;
+    };
+
     /**
      * @brief mssql server数据库访问类
      */
@@ -20,6 +36,16 @@ namespace kingdom{
         CSqlServer();
         virtual ~CSqlServer();
 
+    protected:
+        _ConnectionPtr m_connection;
+        _RecordsetPtr m_recordSet;
+        DataRecordList m_list;
+        boost::atomic<bool> m_isReady;
+        boost::condition_variable m_cv;
+        boost::mutex m_mutex;
+        boost::atomic<bool> m_runFlag;
+        ST_ConnectionContext m_ConnectionContext;
+
         virtual int initialize(ContextPtr contextPtr);
         virtual int connect();
         virtual int close();
@@ -27,9 +53,10 @@ namespace kingdom{
         virtual void traversalResult();
         virtual void unInitialize();
     private:
-        _ConnectionPtr m_connection;
-        _RecordsetPtr m_recordSet;
+        void beginTrans(_ConnectionPtr con);
+        void commitTrans(_ConnectionPtr con);
 
+        void updateRecord();
         /**
          * @brief 重加密，把AUTH_DATA的原始密文转换为国密密文
          *
@@ -39,25 +66,6 @@ namespace kingdom{
          * @return 0:成功，非0:失败
          */
         inline int reEncrypt(ST_DataRecord &record,_RecordsetPtr &recordSet);
-
-        /**
-         * @brief 更新数据记录,把国密密文及密码类型写到数据库
-         *
-         * @param[in] record   当前数据记录
-         * @param[in] recordSet 数据记录集
-         *
-         * @return 0:成功，非0:失败
-         */
-        inline int updateRecord(ST_DataRecord &record,_RecordsetPtr &recordSet);
-
-        /**
-         * @brief 提交数据
-         *
-         * @param[in] recordSet 数据记录集
-         *
-         * @return 0:成功，非0:失败
-         */
-        inline int commit(_RecordsetPtr recordSet);
     };
 
 }

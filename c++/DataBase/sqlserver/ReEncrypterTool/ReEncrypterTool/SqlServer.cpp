@@ -3,12 +3,13 @@
 #include <iostream>
 #include <sstream>
 #include <boost/progress.hpp>
+#include <boost/thread/shared_lock_guard.hpp>
 #include "kdstoragecrypt.h"
 
 using namespace std;
 namespace kingdom{
 
-    CSqlServer::CSqlServer()
+    CSqlServer::CSqlServer():m_isReady(false),m_runFlag(true)
     {
     }
 
@@ -25,6 +26,14 @@ namespace kingdom{
         {
             /* 创建connection对象 */
             res=m_connection.CreateInstance(_T("ADODB.Connection"));
+            for(int i=0;i<m_ConnectionContext.ThreadCount;++i)
+            {
+                _ConnectionPtr conPtr;
+                conPtr.CreateInstance(_T("ADODB.Connection"));
+                boost::thread::id id=m_ConnectionContext.ThreadGroup.create_thread(boost::bind(&CSqlServer::updateRecord,this))->get_id();
+                m_ConnectionContext.ConnectionPool[id]=conPtr;
+            }
+            cout<<"Build "<<m_ConnectionContext.ThreadCount<<" threads."<<endl;
         }
         catch(::_com_error e)
         {
@@ -43,7 +52,15 @@ namespace kingdom{
             ::_bstr_t strConnect=_T("uid=;pwd=;Server=127.0.0.1;Provider=SQLOLEDB;Database=kbssacct;");
             ::_bstr_t name=m_contextPtr->getUserName().c_str();
             ::_bstr_t pwd=m_contextPtr->getPassword().c_str();
+
             res=m_connection->Open(strConnect,name,pwd,::adModeUnknown);
+
+            ConnectionPoolMap::iterator iter=m_ConnectionContext.ConnectionPool.begin();
+            while(iter!=m_ConnectionContext.ConnectionPool.end())
+            {
+                res|=iter->second->Open(strConnect,name,pwd,::adModeUnknown);
+                ++iter;
+            }
         }
         catch(::_com_error e)
         {
@@ -60,6 +77,14 @@ namespace kingdom{
             m_recordSet->Close();
         }
         m_connection->Close();
+
+        m_ConnectionContext.ThreadGroup.join_all();
+        ConnectionPoolMap::iterator iter=m_ConnectionContext.ConnectionPool.begin();
+        while(iter!=m_ConnectionContext.ConnectionPool.end())
+        {
+            iter->second->Close();
+            ++iter;
+        }
         return 0;
     }
 
@@ -81,6 +106,12 @@ namespace kingdom{
                 }
                 m_recordCount=m_recordSet->GetRecordCount();
                 m_contextPtr->getResultPtr()->TotalRecordCount=m_recordCount;
+
+                {
+                    boost::unique_lock<boost::mutex> locker(m_mutex);
+                    m_isReady=true;
+                    m_cv.notify_all();
+                }
             } while(0);
         }
         catch(_com_error e)
@@ -110,63 +141,118 @@ namespace kingdom{
             //cout<<record.UserCode<<":"<<record.AuthData<<":"<<record.AuthNewData<<endl;
             return res;
         }
-        return 0;
+        return -1;
     }
 
-    inline int CSqlServer::commit(_RecordsetPtr recordSet)
+    //inline int CSqlServer::commit(_RecordsetPtr recordSet)
+    //{
+    //    try
+    //    {
+    //        recordSet->MovePrevious();
+    //        recordSet->Update();
+    //    }
+    //    catch(_com_error &e)
+    //    {
+    //        cout<<"commit CiptherToGMCipher error:"<<e.ErrorMessage()<<endl;
+    //        return -1;
+    //    }
+    //    return 0;
+    //}
+    void CSqlServer::updateRecord()
     {
-        try
         {
-            recordSet->MovePrevious();
-            recordSet->Update();
+            boost::unique_lock<boost::mutex> locker(m_mutex);
+            while(!m_isReady)
+                m_cv.wait(locker);
         }
-        catch(_com_error &e)
-        {
-            cout<<"commit CiptherToGMCipher error:"<<e.ErrorMessage()<<endl;
-            return -1;
-        }
-        return 0;
-    }
 
-    inline int CSqlServer::updateRecord(ST_DataRecord &record,_RecordsetPtr &recordSet)
-    {
-        try
+        std::ostringstream oss;
+        ST_DataRecordPtr recordPtr;
+        int count=0;
+        _ConnectionPtr con=m_ConnectionContext.ConnectionPool[boost::this_thread::get_id()];
+        this->beginTrans(con);
+        while(m_runFlag||m_list.size()>0)
         {
-            recordSet->PutCollect("AUTH_DATA_TYPE",_variant_t("1"));
-            recordSet->PutCollect("AUTH_DATA",_variant_t(record.AuthData));
+            oss.str("");
+            count=0;
+            {
+                boost::mutex::scoped_lock locker(m_mutex);
+                std::list<ST_DataRecordPtr>::iterator iter=m_list.begin();
+                while(iter!=m_list.end())
+                {
+                    recordPtr=*iter;
+                    oss<<"UPDATE AUTH_INFO SET AUTH_DATA_TYPE=\'1\',AUTH_DATA=\'"<<recordPtr->AuthData<<"\' WHERE USER_CODE="<<recordPtr->UserCode<<" and USER_ROLE=\'"<<recordPtr->UserRole<<"\' AND USE_SCOPE=\'"<<recordPtr->UserScope<<"\' AND AUTH_TYPE=\'"<<
+                        recordPtr->AuthType<<"\';";
+                    ++iter;
+                    m_list.pop_front();
+                    if(++count>=10)
+                    {
+                        break;
+                    }
+                }
+            }
+            if(count>0)
+            {
+                con->Execute(oss.str().c_str(),NULL,adCmdText);
+            }
+            else{
+                boost::this_thread::sleep(boost::posix_time::millisec(500));
+            }
         }
-        catch(_com_error &e)
-        {
-            cout<<"update data error:"<<e.ErrorMessage()<<endl;
-            return -1;
-        }
-        return 0;
+        this->commitTrans(con);
     }
 
     void CSqlServer::traversalResult()
     {
         int res=0;
         ST_DataRecord record;
-        cout<<"processing..."<<endl;
+        cout<<"processing "<<m_recordCount<<" records......"<<endl;
         boost::progress_display pd(m_recordCount);
         while(!m_recordSet->adoEOF)
         {
-            if(((res=reEncrypt(record,m_recordSet))<0)||((res=updateRecord(record,m_recordSet))<0))
+            if((res=reEncrypt(record,m_recordSet))<0)
             {
                 ++m_contextPtr->getResultPtr()->FailingRecordCount;
                 m_contextPtr->getResultPtr()->FailingInfo.push_back(record.UserCode);
             }
             else{
                 ++m_contextPtr->getResultPtr()->SuccessfulRecordCount;
+
+                boost::mutex::scoped_lock locker(m_mutex);
+                m_list.push_back(ST_DataRecordPtr(new ST_DataRecord(record)));
             }
             ++pd;
             m_recordSet->MoveNext();
         }
-        commit(m_recordSet);
+        m_runFlag=false;
     }
 
     void CSqlServer::unInitialize()
     {
         ::CoUninitialize();
+    }
+
+    void CSqlServer::beginTrans(_ConnectionPtr con)
+    {
+        try
+        {
+            con->Execute("BEGIN TRAN;",NULL,adCmdText);
+        }
+        catch(::_com_error e)
+        {
+            cout<<e.ErrorMessage()<<endl;
+        }
+    }
+
+    void CSqlServer::commitTrans(_ConnectionPtr con)
+    {
+        try
+        {
+            con->Execute("COMMIT;",NULL,adCmdText);
+        }
+        catch(::_com_error e)
+        {
+            cout<<e.ErrorMessage()<<endl;
+        }
     }
 }
