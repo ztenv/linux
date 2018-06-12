@@ -1,5 +1,8 @@
 #include "IDataAccess.h"
 #include <iostream>
+
+#include "kdstoragecrypt.h"
+
 namespace kingdom{
     using namespace std;
 
@@ -43,6 +46,20 @@ namespace kingdom{
         return res;
     }
 
+    int IDataAccess::reEncrypt(ST_DataRecord &record)
+    {
+        if((record.AuthData[0]!=0)||(record.AuthData[0]==' ')&&(record.AuthData[1]!=0))
+        {
+            int res=CipherToGMCipher((unsigned char*)record.AuthNewData,sizeof(record.AuthNewData),(unsigned char*)record.UserCode,strlen(record.UserCode),(unsigned char*)record.AuthData,strlen(record.AuthData),(unsigned char *)record.UserCode,strlen(record.UserCode),EM_PLATFORM_W);
+            if(res>0)
+            {
+                record.AuthNewData[res]=0;
+            }
+            //cout<<record.UserCode<<":"<<record.AuthData<<":"<<record.AuthNewData<<endl;
+            return res;
+        }
+        return -1;
+    }
     int IDataAccess::initialize(ContextPtr contextPtr)
     {
         m_contextPtr=contextPtr;

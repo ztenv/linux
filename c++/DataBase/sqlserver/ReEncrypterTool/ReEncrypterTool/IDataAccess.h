@@ -36,6 +36,14 @@ namespace kingdom{
          */
         long m_recordCount;
 
+        /**
+        * @brief 重加密，把AUTH_DATA的原始密文转换为国密密文
+        *
+        * @param[in] record    当前数据记录
+        *
+        * @return 大于0:成功，小于等于0:失败
+        */
+        int reEncrypt(ST_DataRecord &record);
 
         /**
          * @brief 初始化数据库

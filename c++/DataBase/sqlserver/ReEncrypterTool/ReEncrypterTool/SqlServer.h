@@ -57,15 +57,7 @@ namespace kingdom{
         void commitTrans(_ConnectionPtr con);
 
         void updateRecord();
-        /**
-         * @brief 重加密，把AUTH_DATA的原始密文转换为国密密文
-         *
-         * @param[in] record    当前数据记录
-         * @param[in] recordSet 数据记录集
-         *
-         * @return 0:成功，非0:失败
-         */
-        inline int reEncrypt(ST_DataRecord &record,_RecordsetPtr &recordSet);
+
     };
 
 }

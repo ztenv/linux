@@ -29,11 +29,13 @@ int main(int argc,char *argv[])
     po::options_description od("command options");
     std::string user,pwd,ip,dbName;
     od.add_options() ("help,h","list help info")
+#ifdef _WIN32
         ("username,u",po::value<std::string>(&user)->default_value("sa"),"kbssacct database user name")
         ("password,p",po::value<std::string>(&pwd)->default_value("sa"),"kbssacct database user password")
-#ifdef _WIN32
         ("ip,i",po::value<std::string>(&ip)->default_value("127.0.0.1"),"mssql server ip")
 #else
+        ("username,u",po::value<std::string>(&user)->default_value("ACCT"),"kbssacct database user name")
+        ("password,p",po::value<std::string>(&pwd)->default_value("acct"),"kbssacct database user password")
         ("ip,i",po::value<std::string>(&ip)->default_value("127.0.0.1:1521"),"oracle ip and port")
 #endif
         ("dbName,d",po::value<std::string>(&dbName)->default_value("kbssacct"),"database name")

@@ -4,7 +4,6 @@
 #include <sstream>
 #include <boost/progress.hpp>
 #include <boost/thread/shared_lock_guard.hpp>
-#include "kdstoragecrypt.h"
 
 using namespace std;
 namespace kingdom{
@@ -122,42 +121,6 @@ namespace kingdom{
         return res;
     }
 
-    inline int CSqlServer::reEncrypt(ST_DataRecord &record,_RecordsetPtr &recordSet)
-    {
-        snprintf(record.UserCode,sizeof(record.UserCode),"%lld",recordSet->GetCollect("USER_CODE").llVal);
-        record.UserRole=*recordSet->GetCollect("USER_ROLE").pcVal;
-        record.UserScope=*recordSet->GetCollect("USE_SCOPE").pcVal;
-        record.AuthType=*recordSet->GetCollect("AUTH_TYPE").pcVal;
-        record.AuthDataType=*recordSet->GetCollect("AUTH_DATA_TYPE").pcVal;
-        record.AuthNewData[0]=0;
-        strcpy(record.AuthData,((_bstr_t)recordSet->GetCollect("AUTH_DATA")));
-        if((record.AuthData[0]!=0)||(record.AuthData[0]==' ')&&(record.AuthData[1]!=0))
-        {
-            int res=CipherToGMCipher((unsigned char*)record.AuthNewData,sizeof(record.AuthNewData),(unsigned char*)record.UserCode,strlen(record.UserCode),(unsigned char*)record.AuthData,strlen(record.AuthData),(unsigned char *)record.UserCode,strlen(record.UserCode),EM_PLATFORM_W);
-            if(res>0)
-            {
-                record.AuthNewData[res]=0;
-            }
-            //cout<<record.UserCode<<":"<<record.AuthData<<":"<<record.AuthNewData<<endl;
-            return res;
-        }
-        return -1;
-    }
-
-    //inline int CSqlServer::commit(_RecordsetPtr recordSet)
-    //{
-    //    try
-    //    {
-    //        recordSet->MovePrevious();
-    //        recordSet->Update();
-    //    }
-    //    catch(_com_error &e)
-    //    {
-    //        cout<<"commit CiptherToGMCipher error:"<<e.ErrorMessage()<<endl;
-    //        return -1;
-    //    }
-    //    return 0;
-    //}
     void CSqlServer::updateRecord()
     {
         {
@@ -210,7 +173,15 @@ namespace kingdom{
         boost::progress_display pd(m_recordCount);
         while(!m_recordSet->adoEOF)
         {
-            if((res=reEncrypt(record,m_recordSet))<0)
+            snprintf(record.UserCode,sizeof(record.UserCode),"%lld",m_recordSet->GetCollect("USER_CODE").llVal);
+            record.UserRole=*m_recordSet->GetCollect("USER_ROLE").pcVal;
+            record.UserScope=*m_recordSet->GetCollect("USE_SCOPE").pcVal;
+            record.AuthType=*m_recordSet->GetCollect("AUTH_TYPE").pcVal;
+            record.AuthDataType=*m_recordSet->GetCollect("AUTH_DATA_TYPE").pcVal;
+            record.AuthNewData[0]=0;
+            strcpy(record.AuthData,((_bstr_t)m_recordSet->GetCollect("AUTH_DATA")));
+
+            if((res=reEncrypt(record))<0)
             {
                 ++m_contextPtr->getResultPtr()->FailingRecordCount;
                 m_contextPtr->getResultPtr()->FailingInfo.push_back(record.UserCode);
