@@ -1,4 +1,3 @@
-#pragma once
 /**
  * @file common.h
  * @brief 公共头文件
@@ -6,50 +5,98 @@
  * @version 1.0
  * @date 2018/06/08
  */
+#pragma once
 #include <string>
 #include <list>
+#include <map>
+
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace kingdom{
+
+//#define UPDATE_AUTH_DATA   //是否将国密密文真正的写到数据库，测试的时候只写入kbss加密的密文(不写入国密存储密文，否则再次测试需要先还原数据库才能测试)
+
+    /**
+     * @brief 数据库连接上下文
+     *
+     * @tparam T 数据库连接类型
+     */
+    template<typename T>
+    struct ST_ConnectionContext
+    {
+    public:
+        ST_ConnectionContext():ThreadNumber(4)
+        {
+        }
+
+        ~ST_ConnectionContext()
+        {
+        }
+
+        /**
+         * @brief 连接池类型
+         */
+        typedef std::map<boost::thread::id,T> ConnectionPoolMap;
+
+        /**
+         * @brief 线程个数
+         */
+        size_t ThreadNumber;
+
+        /**
+         * @brief 连接池
+         */
+        ConnectionPoolMap ConnectionPool;
+
+        /**
+         * @brief 线程组
+         */
+        boost::thread_group ThreadGroup;
+    };
+
     /**
      * @brief 数据记录结构体
      */
     struct ST_DataRecord{
     public:
-        ST_DataRecord():UserRole(-1),UserScope(-1),AuthType(-1),AuthDataType(-1)
+        ST_DataRecord():UserRole(-1),UserScope(-1),AuthType(-1)//,AuthDataType(-1)
         {
             UserCode[0]=0;
             AuthData[0]=0;
             AuthNewData[0]=0;
         }
+
         ~ST_DataRecord()
-        {}
+        {
+        }
 
         /**
          * @brief 用户代码
          */
         char UserCode[20];
+
         /**
          * @brief 用户角色
          */
         char UserRole;
+
         /**
          * @brief 用户类别
          */
         char UserScope;
+
         /**
          * @brief 认证类型
          */
         char AuthType;
-        /**
-         * @brief 密文类型：0老的密文，1：国密密文
-         */
-        char AuthDataType;
+
         /**
          * @brief 旧的密文
          */
         char AuthData[257];
+
         /**
          * @brief 用于存储新的(国密)密文
          */
@@ -64,32 +111,44 @@ namespace kingdom{
     struct ST_Result{
     public:
         ST_Result():UsedTime(0,0,0),SuccessfulRecordCount(0),FailingRecordCount(0),TotalRecordCount(0)
-        {}
+        {
+        }
+
         ~ST_Result()
-        {}
+        {
+        }
 
         /**
          * @brief 总耗时
          */
         boost::posix_time::time_duration UsedTime;
+
         /**
          * @brief 成功的记录数
          */
         unsigned long long SuccessfulRecordCount;
+
         /**
          * @brief 失败的记录数
          */
         unsigned long long FailingRecordCount;
+
         /**
          * @brief 总的记录数
          */
         long long TotalRecordCount;
+
         /**
          * @brief 失败记录的用户代码
          */
         std::list<std::string> FailingInfo;
 
+
+        /**
+         * @brief 内容持久化到文件
+         */
         void dump();
+
         /**
          * @brief 输出操作符
          *
@@ -99,7 +158,11 @@ namespace kingdom{
          * @return 输出流本身
          */
         friend std::ostream & operator <<(std::ostream &oss,ST_Result &result);
+
     private:
+        /**
+         * @brief 文件名
+         */
         std::string m_fileName;
     };
     typedef boost::shared_ptr<ST_Result> ST_ResultPtr;
@@ -109,7 +172,7 @@ namespace kingdom{
      */
     class Context{
     public:
-        Context():m_dbName("kbssacct")
+        Context():m_dbName("kbssacct"),m_threadNumber(4)
         {
 #ifdef _WIN32
             m_ip="127.0.0.1";
@@ -118,8 +181,10 @@ namespace kingdom{
 #endif
             m_resultPtr=ST_ResultPtr(new ST_Result());
         }
+
         ~Context()
-        {}
+        {
+        }
 
         /**
          * @brief 获取数据库的用户名
@@ -160,7 +225,6 @@ namespace kingdom{
         {
             m_password=password;
         }
-
 
         /**
          * @brief 获取数据库的ip
@@ -211,12 +275,40 @@ namespace kingdom{
         {
             return m_resultPtr;
         }
+
+
+        /**
+         * @brief 设置线程数量,默认值为4,取值范围:(0,50)
+         *
+         * @param[in] threadNumber 线程数量
+         */
+        void setThreadNumber(size_t threadNumber)
+        {
+            if((threadNumber==0)||(threadNumber>50))
+            {
+                threadNumber=4;
+            }
+            m_threadNumber=threadNumber;
+        }
+
+
+        /**
+         * @brief 获取线程数量
+         *
+         * @return 线程数量
+         */
+        size_t getThreadNumber()
+        {
+            return m_threadNumber;
+        }
+
     private:
         ST_ResultPtr m_resultPtr;
         std::string m_userName;
         std::string m_password;
         std::string m_ip;
         std::string m_dbName;
+        size_t m_threadNumber;
     };
     typedef boost::shared_ptr<Context> ContextPtr;
 }

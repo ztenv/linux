@@ -1,4 +1,5 @@
 #include "IDataAccess.h"
+
 #include <iostream>
 
 #include "kdstoragecrypt.h"
@@ -6,7 +7,7 @@
 namespace kingdom{
     using namespace std;
 
-    IDataAccess::IDataAccess():m_contextPtr(0),m_recordCount(0),m_isReady(false),m_runFlag(true)
+    IDataAccess::IDataAccess():m_isReady(false),m_runFlag(true)
     {}
 
     IDataAccess::~IDataAccess()
@@ -15,7 +16,7 @@ namespace kingdom{
     int IDataAccess::doWork(ContextPtr contextPtr)
     {
         int res=0;
-        do 
+        do
         {
             if((res=this->initialize(contextPtr))!=0)
             {
@@ -43,27 +44,35 @@ namespace kingdom{
             }
             this->unInitialize();
         } while (0);
+
         return res;
     }
 
     int IDataAccess::reEncrypt(ST_DataRecord &record)
     {
-        if((record.AuthData[0]!=0)||(record.AuthData[0]==' ')&&(record.AuthData[1]!=0))
+#ifdef _WIN32
+        EM_PlatformType pt=EM_PLATFORM_W;
+#else
+        EM_PlatformType pt=EM_PLATFORM_U;
+#endif
+
+        if((record.AuthData[0]!=0)||((record.AuthData[0]==' ')&&(record.AuthData[1]!=0)))
         {
-            int res=CipherToGMCipher((unsigned char*)record.AuthNewData,sizeof(record.AuthNewData),(unsigned char*)record.UserCode,strlen(record.UserCode),(unsigned char*)record.AuthData,strlen(record.AuthData),(unsigned char *)record.UserCode,strlen(record.UserCode),EM_PLATFORM_W);
+            int res=CipherToGMCipher((unsigned char*)record.AuthNewData,sizeof(record.AuthNewData),(unsigned char*)record.UserCode,strlen(record.UserCode),(unsigned char*)record.AuthData,strlen(record.AuthData),(unsigned char *)record.UserCode,strlen(record.UserCode),pt);
             if(res>0)
             {
                 record.AuthNewData[res]=0;
             }
-            //cout<<record.UserCode<<":"<<record.AuthData<<":"<<record.AuthNewData<<endl;
             return res;
         }
+
         return -1;
     }
 
     int IDataAccess::initialize(ContextPtr contextPtr)
     {
         m_contextPtr=contextPtr;
+
         return 0;
     }
 

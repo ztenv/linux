@@ -1,0 +1,1 @@
+g++ common.cpp IDataAccess.cpp main.cpp Oracle.cpp -I$BOOST_ROOT -I../include -locci -lclntsh -lnnz11 -lKDStorageCrypt64 -lboost_system -lboost_program_options -lboost_date_time -lboost_thread -lrt -L../lib -L$ORACLE_HOME/lib -L$BOOST_ROOT/stage/lib -o ../bin/ReEncryptTool
