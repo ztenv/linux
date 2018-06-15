@@ -104,5 +104,16 @@ int main(int argc,char *argv[])
         cout<<endl;
     }
 
+    {
+        map<int,int> mp=boost::assign::map_list_of(1,1)(2,2)(3,3)(4,4).to_container(mp);
+        map<int,int>::iterator iter=mp.begin();
+        while(iter!=mp.end())
+        {
+            cout<<"<"<<iter->first<<","<<iter->second<<"> ";
+            ++iter;
+        }
+        cout<<endl;
+    }
+
     return 0;
 }
