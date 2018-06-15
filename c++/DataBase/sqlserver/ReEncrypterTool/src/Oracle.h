@@ -1,6 +1,6 @@
 /**
  * @file Oracle.h
- * @brief Oracleè®¿é—®ç±»
+ * @brief Oracle·ÃÎÊÀà
  * @author shlian
  * @version 1.0
  * @date 2018/06/13
@@ -18,7 +18,7 @@
 namespace kingdom{
 
     /**
-     * @brief oracle æ•°æ®åº“è®¿é—®ç±»
+     * @brief oracle Êı¾İ¿â·ÃÎÊÀà
      */
     class COracle:public IDataAccess
     {
@@ -44,14 +44,14 @@ namespace kingdom{
         std::string m_conStr;
 
         /**
-         * @brief ä»æ•°æ®åº“è¯»å–æ•°æ®
+         * @brief ´ÓÊı¾İ¿â¶ÁÈ¡Êı¾İ
          *
-         * @param[in] record å­˜å‚¨æ•°æ®çš„å˜é‡
+         * @param[in] record ´æ´¢Êı¾İµÄ±äÁ¿
          */
         inline void fetchData(ST_DataRecord &record);
 
         /**
-         * @brief æ›´æ–°æ•°æ®åˆ°æ•°æ®åº“
+         * @brief ¸üĞÂÊı¾İµ½Êı¾İ¿â
          */
         void updateRecord();
     };
