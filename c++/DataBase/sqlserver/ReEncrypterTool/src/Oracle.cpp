@@ -45,7 +45,7 @@ namespace kingdom{
             res=-1;
         }
 
-        for(int i=0;i<m_ConnectionContext.ThreadNumber;++i)
+        for(size_t i=0;i<m_ConnectionContext.ThreadNumber;++i)
         {
             oracle::occi::Connection *pConnection=m_env->createConnection(m_contextPtr->getUserName(),m_contextPtr->getPassword(),m_conStr);
             boost::thread::id id=m_ConnectionContext.ThreadGroup.create_thread(boost::bind(&COracle::updateRecord,this))->get_id();
