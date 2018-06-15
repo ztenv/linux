@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <stack>
 
 #include <boost/assign/std.hpp>
 #include <boost/assign/std/vector.hpp>
@@ -111,6 +112,16 @@ int main(int argc,char *argv[])
         {
             cout<<"<"<<iter->first<<","<<iter->second<<"> ";
             ++iter;
+        }
+        cout<<endl;
+    }
+
+    {
+        stack<string> sta=boost::assign::list_of("first")("second")("third").to_adapter(sta);
+        while(!sta.empty())
+        {
+            cout<<sta.top()<<" ";
+            sta.pop();
         }
         cout<<endl;
     }
