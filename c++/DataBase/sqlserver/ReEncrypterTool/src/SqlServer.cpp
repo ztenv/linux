@@ -99,7 +99,7 @@ namespace kingdom{
         int res=0;
         try
         {
-            const char* szSql="SELECT USER_CODE,USER_ROLE,USE_SCOPE,AUTH_TYPE,AUTH_DATA,AUTH_DATA_TYPE from AUTH_INFO WHERE AUTH_DATA_TYPE=\'0\'";
+            const char* szSql="SELECT USER_CODE,USER_ROLE,USE_SCOPE,AUTH_TYPE,AUTH_DATA from AUTH_INFO WHERE AUTH_DATA_TYPE=\'0\'";
             do{
                 //创建记录对象
                 if((res=m_recordSet.CreateInstance(__uuidof(Recordset)))!=0)

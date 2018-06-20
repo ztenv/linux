@@ -7,7 +7,7 @@ namespace kingdom{
     using namespace std;
     using namespace oracle::occi;
 
-    COracle::COracle():m_env(0),m_con(0),m_stat(0),m_recordSet(0),m_conStr("127.0.0.1:1521/kbssacct")
+    COracle::COracle():m_env(0),m_con(0),m_stat(0),m_recordSet(0),m_conStr("127.0.0.1:1521/orcl")
     {
     }
 
@@ -70,22 +70,18 @@ namespace kingdom{
                 break;
             }
 
-            m_recordSet=m_stat->executeQuery("select count(*) from AUTH_INFO");
+            m_recordSet=m_stat->executeQuery("select count(*) from AUTH_INFO WHERE AUTH_DATA_TYPE=\'0\'");
             m_recordSet->next();
             m_recordCount=m_recordSet->getInt(1);
             m_contextPtr->getResultPtr()->TotalRecordCount=m_recordCount;
+
+            m_recordSet=m_stat->executeQuery("SELECT USER_CODE,USER_ROLE,USE_SCOPE,AUTH_TYPE,AUTH_DATA from AUTH_INFO WHERE AUTH_DATA_TYPE=\'0\'");
 
             {
                 boost::unique_lock<boost::mutex> locker(m_mutex);
                 m_isReady=true;
                 m_cv.notify_all();
             }
-
-#ifdef UPDATE_AUTH_DATA
-            m_recordSet=m_stat->executeQuery("SELECT USER_CODE,USER_ROLE,USE_SCOPE,AUTH_TYPE,AUTH_DATA from AUTH_INFO WHERE AUTH_DATA_TYPE=\'0\'");
-#else
-            m_recordSet=m_stat->executeQuery("SELECT USER_CODE,USER_ROLE,USE_SCOPE,AUTH_TYPE,AUTH_DATA from AUTH_INFO");
-#endif
 
         } while(0);
 
@@ -127,11 +123,13 @@ namespace kingdom{
                 while(iter!=m_list.end())
                 {
                     recordPtr=*iter;
+                    oss<<"UPDATE AUTH_INFO SET AUTH_DATA_TYPE=\'1\',AUTH_DATA=\'"<<
 #ifdef UPDATE_AUTH_DATA
-                    oss<<"UPDATE AUTH_INFO SET AUTH_DATA_TYPE=\'1\',AUTH_DATA=\'"<<recordPtr->AuthNewData<<"\' WHERE USER_CODE="<<recordPtr->UserCode<<" and USER_ROLE=\'"<<recordPtr->UserRole<<"\' AND USE_SCOPE=\'"<<recordPtr->UserScope<<"\' AND AUTH_TYPE=\'"<<recordPtr->AuthType<<"\'";
+                        recordPtr->AuthNewData
 #else
-                    oss<<"UPDATE AUTH_INFO SET AUTH_DATA=\'"<<recordPtr->AuthData<<"\' WHERE USER_CODE="<<recordPtr->UserCode<<" and USER_ROLE=\'"<<recordPtr->UserRole<<"\' AND USE_SCOPE=\'"<<recordPtr->UserScope<<"\'";
+                        recordPtr->AuthData
 #endif
+                        <<"\' WHERE USER_CODE="<<recordPtr->UserCode<<" and USER_ROLE=\'"<<recordPtr->UserRole<<"\' AND USE_SCOPE=\'"<<recordPtr->UserScope<<"\' AND AUTH_TYPE=\'"<<recordPtr->AuthType<<"\'";
                     ++iter;
                     m_list.pop_front();
 
