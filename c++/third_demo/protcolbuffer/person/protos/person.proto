@@ -1,0 +1,19 @@
+syntax="proto3";
+
+package Base;
+
+enum EN_SEX{
+    M=0;
+    F=1;
+}
+
+message Person{
+    string id=1;
+    string name=2;
+    EN_SEX sex=3;
+    int32  age=4;
+    string phone=5;
+    repeated string address=6;
+}
+    
+
