@@ -18,3 +18,7 @@ project
 exe stream_main :
     ./text_archive/stream_main.cpp
     ;
+
+exe binary_main :
+    ./binary_archive/binary_main.cpp
+    ;

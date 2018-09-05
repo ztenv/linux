@@ -4,11 +4,17 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+
+#
+
 /**
  * @brief 用于boost::serialization测试的用户类
  */
 class CUser{
 public:
+    friend class boost::serialization::access;
     CUser():m_age(0)
     {
     }
