@@ -27,6 +27,10 @@ exe derived_main :
     ./derived_archive/derived_main.cpp
     ;
 
+exe list_main :
+    ./stl_archive/list_main.cpp
+    ;
+
 #exe xml_main :
 #    ./xml_archive/xml_main.cpp
 #    ;
