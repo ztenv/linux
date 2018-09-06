@@ -15,10 +15,18 @@ project
         <library>/boost/coroutine//boost_coroutine
     ;
 
-exe stream_main :
+exe text_main :
     ./text_archive/stream_main.cpp
     ;
 
 exe binary_main :
     ./binary_archive/binary_main.cpp
     ;
+
+exe derived_main :
+    ./derived_archive/derived_main.cpp
+    ;
+
+#exe xml_main :
+#    ./xml_archive/xml_main.cpp
+#    ;

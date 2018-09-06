@@ -1,13 +1,11 @@
 #include <string>
 #include <vector>
 
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-
-#
+//#include <boost/archive/text_oarchive.hpp>
+//#include <boost/archive/text_iarchive.hpp>
+//
+//#include <boost/archive/xml_oarchive.hpp>
+//#include <boost/archive/xml_iarchive.hpp>
 
 /**
  * @brief 用于boost::serialization测试的用户类
@@ -23,7 +21,7 @@ public:
     {
     }
 
-    ~CUser()
+    virtual ~CUser()
     {
     }
 
