@@ -1,0 +1,10 @@
+syntax = "proto3";
+package pt;
+
+message user
+{
+    string name=1;
+    int32  sex=2;
+    int32 age=3;
+}
+    

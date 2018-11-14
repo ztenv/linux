@@ -1,0 +1,20 @@
+syntax = "proto3";
+package ogg;
+
+message CheckTable
+{
+    enum DataBaseType{
+        Oracle=0;
+        SQLServer=1;
+    }
+
+    int32 DBType=1;
+    string IP=2;
+    string Port=3;
+    string SID=4;
+    string User=5;
+    string Password=6;
+
+    repeated string Tablelist=7;
+}
+    
