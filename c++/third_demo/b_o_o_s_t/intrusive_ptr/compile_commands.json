@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/shlian/demo/boost/intrusive_ptr/build",
+  "command": "/usr/bin/c++   -I/home/shlian/demo/boost/intrusive_ptr/. -I/home/shlian/3rd/boost_1_74_0  -g3 -rdynamic -std=c++11   -o CMakeFiles/main.dir/demo.cpp.o -c /home/shlian/demo/boost/intrusive_ptr/demo.cpp",
+  "file": "/home/shlian/demo/boost/intrusive_ptr/demo.cpp"
+},
+{
+  "directory": "/home/shlian/demo/boost/intrusive_ptr/build",
+  "command": "/usr/bin/c++   -I/home/shlian/demo/boost/intrusive_ptr/. -I/home/shlian/3rd/boost_1_74_0  -g3 -rdynamic -std=c++11   -o CMakeFiles/main.dir/main.cpp.o -c /home/shlian/demo/boost/intrusive_ptr/main.cpp",
+  "file": "/home/shlian/demo/boost/intrusive_ptr/main.cpp"
+}
+]
