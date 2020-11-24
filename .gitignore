@@ -1,2 +1,4 @@
 *.swp
 .clangd
+cmake-build-debug
+bin

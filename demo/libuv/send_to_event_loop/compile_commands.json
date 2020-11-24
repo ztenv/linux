@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/shlian/demo/linux/demo/libuv/send_to_event_loop/cmake-build-debug",
+  "command": "/usr/bin/c++   -I/home/shlian/demo/linux/demo/libuv/send_to_event_loop/.  -g3 -rdynamic -std=c++11 -g3 -O0    -o CMakeFiles/send_to_event_loop.dir/main.cpp.o -c /home/shlian/demo/linux/demo/libuv/send_to_event_loop/main.cpp",
+  "file": "/home/shlian/demo/linux/demo/libuv/send_to_event_loop/main.cpp"
+},
+{
+  "directory": "/home/shlian/demo/linux/demo/libuv/send_to_event_loop/cmake-build-debug",
+  "command": "/usr/bin/c++   -I/home/shlian/demo/linux/demo/libuv/send_to_event_loop/.  -g3 -rdynamic -std=c++11 -g3 -O0    -o CMakeFiles/send_to_event_loop.dir/home/shlian/demo/linux/demo/libuv/include/common.cpp.o -c /home/shlian/demo/linux/demo/libuv/include/common.cpp",
+  "file": "/home/shlian/demo/linux/demo/libuv/include/common.cpp"
+}
+]
