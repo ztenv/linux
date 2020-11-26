@@ -6,32 +6,41 @@
  * @date 2020-11-24
  */
 
+#include <chrono>
+#include <cstring>
+
 #include <initializer_list>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <memory>
 #include <thread>
 #include <functional>
+#include <vector>
 
 #include <uv.h>
 
 #include <gflags/gflags.h>
+#include <vector>
 
 #include "../include/common.h"
 
-DEFINE_int32(thread_number,5,"the thread number");
+DEFINE_int32(thread_number,2,"the thread number");
 DEFINE_int32(timer_interval,1000,"the timer interval");
 
 using uv_loopPtr=std::shared_ptr<uv_loop_t>;
 using uv_asyncPtr=std::shared_ptr<uv_async_t>;
 using uv_timerPtr=std::shared_ptr<uv_timer_t>;
 using uv_signalPtr=std::shared_ptr<uv_signal_t>;
+using threadSet=std::vector<std::shared_ptr<std::thread>>;
 
 int init(uv_loopPtr &loopPtr) noexcept;
 
 int regist_async(const uv_loopPtr loopPtr,uv_asyncPtr &asyncPtr,uv_async_cb cb);
 int regist_timer(const uv_loopPtr loopPtr,uv_timerPtr &timerPtr,uv_timer_cb cb);
 int regist_signal(const uv_loopPtr loopPtr,uv_signalPtr &signalPtr,uv_signal_cb cb,std::initializer_list<int> signals);
+
+threadSet init_thread(uv_asyncPtr asyncPtr);
 
 int main(int argc, char *argv[])
 {
@@ -51,6 +60,17 @@ int main(int argc, char *argv[])
             break;
         }
 
+        res=regist_async(loopPtr,asyncPtr,[](uv_async_t *handle){
+                auto pdata=static_cast<char*>(handle->data);
+                LOG_INFO(std::this_thread::get_id()<<" recv one request["<<pdata<<"]");
+                delete [] pdata;
+                handle->data=nullptr;
+                });
+        if(res!=0)
+        {
+            break;
+        }
+
         res=regist_timer(loopPtr,timerPtr,[](uv_timer_t *handle){
                 LOG_INFO("timer callback");
                 });
@@ -58,6 +78,8 @@ int main(int argc, char *argv[])
         {
             break;
         }
+
+        auto ts=init_thread(asyncPtr);
 
         //why can not the libuv catch the signal and call back the cb function
         res=regist_signal(loopPtr,signalPtr,[](uv_signal_t *handle,int signum){
@@ -128,9 +150,7 @@ int regist_async(const uv_loopPtr loopPtr,uv_asyncPtr &asyncPtr,uv_async_cb cb)
             LOG_ERROR("init uv_async_t error,res="<<res);
             break;
         }
-        res=uv_async_init(loopPtr.get(),asyncPtr.get(),[](uv_async_t *handle){
-                LOG_INFO("async called in the event loop thread:"<<std::this_thread::get_id());
-                });
+        res=uv_async_init(loopPtr.get(),asyncPtr.get(),cb);
     }while(0);
 
     return res;
@@ -209,4 +229,31 @@ int regist_signal(const uv_loopPtr loopPtr,uv_signalPtr &signalPtr,uv_signal_cb 
     }while(0);
 
     return res;
+}
+
+threadSet init_thread(uv_asyncPtr asyncPtr)
+{
+    threadSet ts;
+    for(int i=0;i<FLAGS_thread_number;++i)
+    {
+        ts.push_back(std::shared_ptr<std::thread>(new std::thread([&](){
+                        while(true)
+                        {
+                            std::ostringstream ss;
+                            ss<<std::this_thread::get_id();
+                            ss<<":";
+                            ss<<common::format_time();
+
+                            char * pdata=new char[ss.str().size()];
+                            strcpy(pdata,ss.str().data());
+                            asyncPtr->data=pdata;
+
+                            uv_async_send(asyncPtr.get());
+                            std::this_thread::sleep_for(std::chrono::seconds(2));
+                        }
+                        })));
+        LOG_INFO("create "<<i+1<<" threads");
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    return ts;
 }
