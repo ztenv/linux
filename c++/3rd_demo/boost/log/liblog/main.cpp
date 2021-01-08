@@ -27,12 +27,12 @@
 
 enum { LOG_RECORDS_TO_WRITE = 100 };
 
-using namespace xbrother::log;
+using namespace common::log;
 int main(int argc, char* argv[])
 {
     try
     {
-        xbrother::log::Logger::Initialize();
+        common::log::Logger::Initialize();
         for (unsigned int i = 0; i < LOG_RECORDS_TO_WRITE; ++i)
         {
             LOG_TRACE("Some Log record "<<i);
@@ -43,13 +43,13 @@ int main(int argc, char* argv[])
             LOG_FATAL("Some Log record "<<i);
         }
 
-        xbrother::log::Logger::UnInitialize();
+        common::log::Logger::UnInitialize();
         return 0;
     }
     catch (std::exception& e)
     {
         std::cout << "FAILURE: " << e.what() << std::endl;
     }
-    xbrother::log::Logger::UnInitialize();
+    common::log::Logger::UnInitialize();
     return 1;
 }

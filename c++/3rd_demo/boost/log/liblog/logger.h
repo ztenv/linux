@@ -16,7 +16,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup/console.hpp>
 
-namespace xbrother{
+namespace common{
 namespace log{
 
 namespace logging = boost::log;
@@ -108,18 +108,20 @@ private:
 }
 }
 
+#define FILE_INFO "["<<__FILE__<<"@"<<__FUNCTION__<<"@"<<__LINE__<<"] "
+
 #define LOG_TRACE(loginfo) \
-     BOOST_LOG_SEV(*xbrother::log::Logger::getLogInstance(),boost::log::trivial::trace) <<loginfo;
+     BOOST_LOG_SEV(*common::log::Logger::getLogInstance(),boost::log::trivial::trace) <<FILE_INFO<<loginfo;
 #define LOG_DEBUG(loginfo)\
-    BOOST_LOG_SEV(*xbrother::log::Logger::getLogInstance(),boost::log::trivial::debug)<<loginfo;
+    BOOST_LOG_SEV(*common::log::Logger::getLogInstance(),boost::log::trivial::debug)<<FILE_INFO<<loginfo;
 #define LOG_INFO(loginfo) \
-    BOOST_LOG_SEV(*xbrother::log::Logger::getLogInstance(),boost::log::trivial::info)<<loginfo;
+    BOOST_LOG_SEV(*common::log::Logger::getLogInstance(),boost::log::trivial::info)<<FILE_INFO<<loginfo;
 #define LOG_WARN(loginfo)\
-    BOOST_LOG_SEV(*xbrother::log::Logger::getLogInstance(),boost::log::trivial::warning)<<loginfo;
+    BOOST_LOG_SEV(*common::log::Logger::getLogInstance(),boost::log::trivial::warning)<<FILE_INFO<<loginfo;
 #define LOG_ERROR(loginfo) \
-    BOOST_LOG_SEV(*xbrother::log::Logger::getLogInstance(),boost::log::trivial::error)<<loginfo;
+    BOOST_LOG_SEV(*common::log::Logger::getLogInstance(),boost::log::trivial::error)<<FILE_INFO<<loginfo;
 #define LOG_FATAL(loginfo)\
-    BOOST_LOG_SEV(*xbrother::log::Logger::getLogInstance(),boost::log::trivial::fatal)<<loginfo;
+    BOOST_LOG_SEV(*common::log::Logger::getLogInstance(),boost::log::trivial::fatal)<<FILE_INFO<<loginfo;
 
 
 

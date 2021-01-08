@@ -1,7 +1,7 @@
 #include "logger.h"
-namespace xbrother{
+namespace common{
 namespace log{
-boost::shared_ptr<LogType> xbrother::log::Logger::m_logPtr;
+boost::shared_ptr<LogType> common::log::Logger::m_logPtr;
 
 }
 }
