@@ -2,3 +2,5 @@
 .clangd
 cmake-build-debug
 bin
+.cache/
+compile_commands.json
