@@ -18,6 +18,17 @@ void init_queue(T &pq)
 }
 
 template<typename T>
+void init_queue_str(T &pqs)
+{
+    pqs.emplace("aaaa");
+    pqs.emplace("cc");
+    pqs.emplace("1");
+    pqs.emplace("ddddd");
+    pqs.emplace("00000000");
+    pqs.emplace("fff");
+}
+
+template<typename T>
 void print(T &pq)
 {
     while( !pq.empty()) {
@@ -37,6 +48,16 @@ int main(int argc, char * argv[])
 
     init_queue(pq2);
     print(pq2);
+
+    std::priority_queue<std::string> pqs;
+    init_queue_str(pqs);
+    print(pqs);
+
+    auto cmp = [](const std::string & first, const std::string second){return first.length() < second.length();};
+    std::priority_queue<std::string, std::vector<std::string>, decltype(cmp)> pqs2(cmp);
+    init_queue_str(pqs2);
+    print(pqs2);
+
 
     return 0;
 }
