@@ -1,5 +1,5 @@
-export CC=/usr/bin/gcc-9
-export CXX=/usr/bin/g++-9
+export CC=/usr/bin/gcc-11
+export CXX=/usr/bin/g++-11
 export EXTERNAL_ROOT=~/3rd #path to where your put the thirdparty artifacts, e.g. ~/build/artifactory/deps
 #export ARTIFACTORY=http://10.14.58.108:30080/artifacts
 
