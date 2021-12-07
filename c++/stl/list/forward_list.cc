@@ -1,3 +1,4 @@
+#include <functional>
 #include <iostream>
 #include <forward_list>
 #include <fmt/format.h>
@@ -16,7 +17,8 @@ int main()
     std::forward_list<int> fl = {1,2,3,4,5,6};
     print(fl);
 
-    fl.sort([](auto &first, auto &second) {return first > second;});
+    //fl.sort([](auto &first, auto &second) {return first > second;});
+    fl.sort(std::greater_equal<int>());
     print(fl);
 
     fl.emplace_front(0);
