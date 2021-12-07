@@ -9,3 +9,10 @@ target_link_libraries(forward_list_demo
     )
 install(TARGETS forward_list_demo RUNTIME DESTINATION bin)
 
+add_executable(list_demo list.cc)
+target_link_libraries(list_demo
+    PRIVATE fmt
+    PUBLIC gflags Boost::date_time Boost::log zmq 
+    INTERFACE Boost::headers
+    )
+install(TARGETS list_demo RUNTIME DESTINATION bin)
