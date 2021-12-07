@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(stl_demo VERSION 1.0)
 
-add_subdirectory(priority_queue)
+add_subdirectory(queue)
 add_subdirectory(array)
 add_subdirectory(vector)
 
