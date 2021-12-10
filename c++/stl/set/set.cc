@@ -62,6 +62,31 @@ int main()
         std::cout << std::endl;
     }
 
+    {
+        std::cout << "equal_range(2) :" << std::endl;
+        auto er = set1.equal_range(2);
+        auto biter = set1.begin();
+        while(biter != er.first) {
+            std::cout << fmt::format(" {},", *biter);
+            ++biter;
+        }
+
+        biter = er.first;
+        std::cout << "[";
+        while(biter != er.second) {
+            std:: cout << fmt::format(" {},", *biter);
+            ++biter;
+        }
+        std::cout << ")";
+
+        biter = er.second;
+        while(biter != set1.end()) {
+            std::cout << fmt::format(" {},", *biter);
+            ++biter;
+        }
+        std::cout << std::endl;
+    }
+
 
     return 0;
 }
