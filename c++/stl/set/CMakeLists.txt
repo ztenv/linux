@@ -8,3 +8,11 @@ target_link_libraries(set_demo
     INTERFACE Boost::headers
     )
 install(TARGETS set_demo RUNTIME DESTINATION bin)
+
+add_executable(multi_set_demo multi_set.cc)
+target_link_libraries(multi_set_demo
+    PRIVATE fmt
+    PUBLIC gflags Boost::date_time Boost::log zmq 
+    INTERFACE Boost::headers
+    )
+install(TARGETS multi_set_demo RUNTIME DESTINATION bin)
