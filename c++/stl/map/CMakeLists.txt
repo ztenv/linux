@@ -8,3 +8,11 @@ target_link_libraries(map_demo
     INTERFACE Boost::headers
     )
 install(TARGETS map_demo RUNTIME DESTINATION bin)
+
+add_executable(multi_map_demo multi_map.cc)
+target_link_libraries(multi_map_demo
+    PRIVATE fmt
+    PUBLIC gflags Boost::date_time Boost::log zmq 
+    INTERFACE Boost::headers
+    )
+install(TARGETS multi_map_demo RUNTIME DESTINATION bin)
