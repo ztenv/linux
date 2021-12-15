@@ -58,5 +58,11 @@ int main()
         }
     }
 
+    {
+        std::cout << "erase_if(key % 2 ==0):" << std::endl;
+        std::erase_if(mmp, [](auto &item) {return item.first %2 == 0;});
+        print(mmp);
+    }
+
     return 0;
 }
